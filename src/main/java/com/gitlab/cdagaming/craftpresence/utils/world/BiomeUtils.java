@@ -30,7 +30,7 @@ import com.gitlab.cdagaming.craftpresence.impl.Pair;
 import com.gitlab.cdagaming.craftpresence.utils.FileUtils;
 import com.gitlab.cdagaming.craftpresence.utils.StringUtils;
 import com.google.common.collect.Lists;
-import net.minecraft.util.registry.IRegistry;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 
 import java.util.List;
@@ -160,7 +160,7 @@ public class BiomeUtils {
      */
     private List<Biome> getBiomeTypes() {
         List<Biome> biomeTypes = Lists.newArrayList();
-        List<Biome> defaultBiomeTypes = Lists.newArrayList(IRegistry.BIOME.iterator());
+        List<Biome> defaultBiomeTypes = Lists.newArrayList(Registry.BIOME.iterator());
 
         if (!defaultBiomeTypes.isEmpty()) {
             for (Biome biome : defaultBiomeTypes) {

@@ -36,7 +36,7 @@ import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ExtendedButtonContr
 import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ExtendedScreen;
 import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ExtendedTextControl;
 import com.gitlab.cdagaming.craftpresence.utils.gui.controls.SliderControl;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.glfw.GLFW;
 
@@ -65,7 +65,7 @@ public class ColorEditorGui extends ExtendedScreen {
     private boolean isModified = false;
     private ResourceLocation currentTexture;
 
-    public ColorEditorGui(GuiScreen parentScreen, String configValueName, PairConsumer<Integer, ColorEditorGui> onAdjustEntry, DataConsumer<ColorEditorGui> onInit) {
+    public ColorEditorGui(Screen parentScreen, String configValueName, PairConsumer<Integer, ColorEditorGui> onAdjustEntry, DataConsumer<ColorEditorGui> onInit) {
         super(parentScreen);
         this.configValueName = configValueName;
         this.pageNumber = 0;

@@ -26,7 +26,7 @@ package com.gitlab.cdagaming.craftpresence.utils.gui.controls;
 
 import com.gitlab.cdagaming.craftpresence.CraftPresence;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 
 import javax.annotation.Nonnull;
 
@@ -35,7 +35,7 @@ import javax.annotation.Nonnull;
  *
  * @author CDAGaming
  */
-public class ExtendedTextControl extends GuiTextField {
+public class ExtendedTextControl extends TextFieldWidget {
     /**
      * The event to occur when a key event occurs
      */
@@ -52,7 +52,7 @@ public class ExtendedTextControl extends GuiTextField {
      * @param heightIn        The Height for this Control
      */
     public ExtendedTextControl(int componentId, FontRenderer fontRendererObj, int x, int y, int widthIn, int heightIn) {
-        super(componentId, fontRendererObj, x, y, widthIn, heightIn);
+        super(fontRendererObj, x, y, widthIn, heightIn, "");
     }
 
     /**

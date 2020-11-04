@@ -31,7 +31,7 @@ import com.gitlab.cdagaming.craftpresence.utils.StringUtils;
 import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ExtendedButtonControl;
 import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ExtendedScreen;
 import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ExtendedTextControl;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.screen.Screen;
 
 public class DynamicEditorGui extends ExtendedScreen {
     private final boolean isNewValue, isDefaultValue;
@@ -42,7 +42,7 @@ public class DynamicEditorGui extends ExtendedScreen {
     private ExtendedTextControl specificMessageInput, newValueName;
     private String attributeName, removeMessage;
 
-    public DynamicEditorGui(GuiScreen parentScreen, String attributeName, PairConsumer<String, DynamicEditorGui> onNewInit, PairConsumer<String, DynamicEditorGui> onAdjustInit, PairConsumer<String, String> onAdjustEntry, PairConsumer<String, String> onRemoveEntry, PairConsumer<String, DynamicEditorGui> onSpecificCallback, PairConsumer<String, DynamicEditorGui> onHoverCallback) {
+    public DynamicEditorGui(Screen parentScreen, String attributeName, PairConsumer<String, DynamicEditorGui> onNewInit, PairConsumer<String, DynamicEditorGui> onAdjustInit, PairConsumer<String, String> onAdjustEntry, PairConsumer<String, String> onRemoveEntry, PairConsumer<String, DynamicEditorGui> onSpecificCallback, PairConsumer<String, DynamicEditorGui> onHoverCallback) {
         super(parentScreen);
         this.attributeName = attributeName;
         isNewValue = StringUtils.isNullOrEmpty(attributeName);

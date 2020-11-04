@@ -35,7 +35,7 @@ import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ExtendedScreen;
 import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ExtendedTextControl;
 import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ScrollableListControl.RenderType;
 import com.gitlab.cdagaming.craftpresence.utils.gui.impl.SelectorGui;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.screen.Screen;
 
 @SuppressWarnings("DuplicatedCode")
 public class GeneralSettingsGui extends ExtendedScreen {
@@ -48,7 +48,7 @@ public class GeneralSettingsGui extends ExtendedScreen {
 
     private int currentPartyPrivacy = PartyPrivacy.Public.getPartyIndex();
 
-    GeneralSettingsGui(GuiScreen parentScreen) {
+    GeneralSettingsGui(Screen parentScreen) {
         super(parentScreen);
     }
 

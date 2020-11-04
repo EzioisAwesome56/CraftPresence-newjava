@@ -40,7 +40,7 @@ import com.gitlab.cdagaming.craftpresence.utils.server.ServerUtils;
 import com.gitlab.cdagaming.craftpresence.utils.world.BiomeUtils;
 import com.gitlab.cdagaming.craftpresence.utils.world.DimensionUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraftforge.fml.common.Mod;
 
 import java.io.File;
@@ -78,7 +78,7 @@ public class CraftPresence {
     /**
      * The Current Player detected from the Minecraft Instance
      */
-    public static EntityPlayer player = instance.player;
+    public static PlayerEntity player = instance.player;
 
     /**
      * The {@link ConfigUtils} Instance for this Mod

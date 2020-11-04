@@ -30,7 +30,7 @@ import com.gitlab.cdagaming.craftpresence.impl.Pair;
 import com.gitlab.cdagaming.craftpresence.utils.FileUtils;
 import com.gitlab.cdagaming.craftpresence.utils.StringUtils;
 import com.google.common.collect.Lists;
-import net.minecraft.util.registry.IRegistry;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.dimension.DimensionType;
 
@@ -172,7 +172,7 @@ public class DimensionUtils {
      */
     private List<DimensionType> getDimensionTypes() {
         List<DimensionType> dimensionTypes = Lists.newArrayList();
-        List<DimensionType> defaultDimensionTypes = Lists.newArrayList(IRegistry.DIMENSION_TYPE.iterator());
+        List<DimensionType> defaultDimensionTypes = Lists.newArrayList(Registry.DIMENSION_TYPE.iterator());
         Map<?, ?> reflectedDimensionTypes = (Map<?, ?>) StringUtils.lookupObject(DimensionType.class, null, "dimensionTypes");
 
         if (!defaultDimensionTypes.isEmpty()) {

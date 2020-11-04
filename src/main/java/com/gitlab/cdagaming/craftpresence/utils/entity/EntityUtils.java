@@ -29,13 +29,14 @@ import com.gitlab.cdagaming.craftpresence.ModUtils;
 import com.gitlab.cdagaming.craftpresence.impl.Pair;
 import com.gitlab.cdagaming.craftpresence.utils.StringUtils;
 import com.google.common.collect.Lists;
-import net.minecraft.client.network.NetworkPlayerInfo;
+import net.minecraft.client.network.play.NetworkPlayerInfo;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.registry.IRegistry;
+import net.minecraft.util.registry.Registry;
 
 import java.util.List;
 
@@ -104,17 +105,17 @@ public class EntityUtils {
     /**
      * The Player's Current Targeted Entity's Tag, if any
      */
-    private NBTTagCompound CURRENT_TARGET_TAG;
+    private CompoundNBT CURRENT_TARGET_TAG;
 
     /**
      * The Player's Current Attacking Entity's Tag, if any
      */
-    private NBTTagCompound CURRENT_ATTACKING_TAG;
+    private CompoundNBT CURRENT_ATTACKING_TAG;
 
     /**
      * The Player's Current Riding Entity's Tag, if any
      */
-    private NBTTagCompound CURRENT_RIDING_TAG;
+    private CompoundNBT CURRENT_RIDING_TAG;
 
     /**
      * If the Player doesn't have an Entity in Critical Slots such as Targeted or Riding
@@ -185,32 +186,32 @@ public class EntityUtils {
      * Synchronizes Data related to this module, if needed
      */
     private void updateEntityData() {
-        final Entity NEW_CURRENT_TARGET = CraftPresence.instance.objectMouseOver != null && CraftPresence.instance.objectMouseOver.type == RayTraceResult.Type.ENTITY ? CraftPresence.instance.objectMouseOver.entity : null;
+        final Entity NEW_CURRENT_TARGET = CraftPresence.instance.objectMouseOver != null && CraftPresence.instance.objectMouseOver.getType() == RayTraceResult.Type.ENTITY ? ((EntityRayTraceResult) CraftPresence.instance.objectMouseOver).getEntity() : null;
         final Entity NEW_CURRENT_ATTACKING = CraftPresence.player.getAttackingEntity();
         final Entity NEW_CURRENT_RIDING = CraftPresence.player.getRidingEntity();
 
         String NEW_CURRENT_TARGET_NAME, NEW_CURRENT_ATTACKING_NAME, NEW_CURRENT_RIDING_NAME;
 
         // Note: Unlike getEntities, this does NOT require Server Module to be enabled
-        // Users are still free to manually add Uuid's as they please for this module
-        if (NEW_CURRENT_TARGET instanceof EntityPlayer) {
-            final EntityPlayer NEW_CURRENT_PLAYER_TARGET = (EntityPlayer) NEW_CURRENT_TARGET;
+        // Users are still free to manually add UUID's as they please for this module
+        if (NEW_CURRENT_TARGET instanceof PlayerEntity) {
+            final PlayerEntity NEW_CURRENT_PLAYER_TARGET = (PlayerEntity) NEW_CURRENT_TARGET;
             NEW_CURRENT_TARGET_NAME = StringUtils.stripColors(NEW_CURRENT_PLAYER_TARGET.getGameProfile().getId().toString());
         } else {
             NEW_CURRENT_TARGET_NAME = NEW_CURRENT_TARGET != null ?
                     StringUtils.stripColors(NEW_CURRENT_TARGET.getDisplayName().getFormattedText()) : "";
         }
 
-        if (NEW_CURRENT_ATTACKING instanceof EntityPlayer) {
-            final EntityPlayer NEW_CURRENT_PLAYER_ATTACKING = (EntityPlayer) NEW_CURRENT_ATTACKING;
+        if (NEW_CURRENT_ATTACKING instanceof PlayerEntity) {
+            final PlayerEntity NEW_CURRENT_PLAYER_ATTACKING = (PlayerEntity) NEW_CURRENT_ATTACKING;
             NEW_CURRENT_ATTACKING_NAME = StringUtils.stripColors(NEW_CURRENT_PLAYER_ATTACKING.getGameProfile().getId().toString());
         } else {
             NEW_CURRENT_ATTACKING_NAME = NEW_CURRENT_ATTACKING != null ?
                     StringUtils.stripColors(NEW_CURRENT_ATTACKING.getDisplayName().getFormattedText()) : "";
         }
 
-        if (NEW_CURRENT_RIDING instanceof EntityPlayer) {
-            final EntityPlayer NEW_CURRENT_PLAYER_RIDING = (EntityPlayer) NEW_CURRENT_RIDING;
+        if (NEW_CURRENT_RIDING instanceof PlayerEntity) {
+            final PlayerEntity NEW_CURRENT_PLAYER_RIDING = (PlayerEntity) NEW_CURRENT_RIDING;
             NEW_CURRENT_RIDING_NAME = StringUtils.stripColors(NEW_CURRENT_PLAYER_RIDING.getGameProfile().getId().toString());
         } else {
             NEW_CURRENT_RIDING_NAME = NEW_CURRENT_RIDING != null ?
@@ -229,7 +230,7 @@ public class EntityUtils {
 
         if (hasTargetChanged) {
             CURRENT_TARGET = NEW_CURRENT_TARGET;
-            CURRENT_TARGET_TAG = CURRENT_TARGET != null ? CURRENT_TARGET.writeWithoutTypeId(new NBTTagCompound()) : null;
+            CURRENT_TARGET_TAG = CURRENT_TARGET != null ? CURRENT_TARGET.writeWithoutTypeId(new CompoundNBT()) : null;
             final List<String> NEW_CURRENT_TARGET_TAGS = CURRENT_TARGET_TAG != null ? Lists.newArrayList(CURRENT_TARGET_TAG.keySet()) : Lists.newArrayList();
 
             if (!NEW_CURRENT_TARGET_TAGS.equals(CURRENT_TARGET_TAGS)) {
@@ -240,7 +241,7 @@ public class EntityUtils {
 
         if (hasAttackingChanged) {
             CURRENT_ATTACKING = NEW_CURRENT_ATTACKING;
-            CURRENT_ATTACKING_TAG = CURRENT_ATTACKING != null ? CURRENT_ATTACKING.writeWithoutTypeId(new NBTTagCompound()) : null;
+            CURRENT_ATTACKING_TAG = CURRENT_ATTACKING != null ? CURRENT_ATTACKING.writeWithoutTypeId(new CompoundNBT()) : null;
             final List<String> NEW_CURRENT_ATTACKING_TAGS = CURRENT_ATTACKING_TAG != null ? Lists.newArrayList(CURRENT_ATTACKING_TAG.keySet()) : Lists.newArrayList();
 
             if (!NEW_CURRENT_ATTACKING_TAGS.equals(CURRENT_ATTACKING_TAGS)) {
@@ -251,7 +252,7 @@ public class EntityUtils {
 
         if (hasRidingChanged) {
             CURRENT_RIDING = NEW_CURRENT_RIDING;
-            CURRENT_RIDING_TAG = CURRENT_RIDING != null ? CURRENT_RIDING.writeWithoutTypeId(new NBTTagCompound()) : null;
+            CURRENT_RIDING_TAG = CURRENT_RIDING != null ? CURRENT_RIDING.writeWithoutTypeId(new CompoundNBT()) : null;
             final List<String> NEW_CURRENT_RIDING_TAGS = CURRENT_RIDING_TAG != null ? Lists.newArrayList(CURRENT_RIDING_TAG.keySet()) : Lists.newArrayList();
 
             if (!NEW_CURRENT_RIDING_TAGS.equals(CURRENT_RIDING_TAGS)) {
@@ -383,13 +384,13 @@ public class EntityUtils {
      * Retrieves and Synchronizes detected Entities
      */
     public void getEntities() {
-        final List<EntityType<?>> defaultEntityTypes = Lists.newArrayList(IRegistry.ENTITY_TYPE.iterator());
+        final List<EntityType<?>> defaultEntityTypes = Lists.newArrayList(Registry.ENTITY_TYPE.iterator());
 
         if (!defaultEntityTypes.isEmpty()) {
             for (EntityType<?> entityLocation : defaultEntityTypes) {
                 if (entityLocation != null) {
                     final String entityName = entityLocation.getName().getFormattedText();
-                    final Class<?> entityClass = entityLocation.getEntityClass();
+                    final Class<?> entityClass = entityLocation.getClass();
                     if (!ENTITY_NAMES.contains(entityName)) {
                         ENTITY_NAMES.add(entityName);
                     }

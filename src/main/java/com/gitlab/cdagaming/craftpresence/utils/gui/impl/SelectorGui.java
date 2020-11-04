@@ -35,7 +35,7 @@ import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ExtendedTextControl
 import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ScrollableListControl;
 import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ScrollableListControl.RenderType;
 import com.google.common.collect.Lists;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.screen.Screen;
 
 import java.util.List;
 
@@ -45,15 +45,15 @@ public class SelectorGui extends ExtendedScreen {
     private final boolean allowContinuing, allowDynamicEditing;
     private final PairConsumer<String, String> onUpdatedCallback;
     private final RenderType renderType;
-    private final PairConsumer<String, GuiScreen> onAdjustDynamicEntry;
-    private final DataConsumer<GuiScreen> onAddDynamicEntry;
+    private final PairConsumer<String, Screen> onAdjustDynamicEntry;
+    private final DataConsumer<Screen> onAddDynamicEntry;
     private ExtendedButtonControl proceedButton;
     private ScrollableListControl scrollList;
     private ExtendedTextControl searchBox;
     private String searchTerm;
     private List<String> itemList;
 
-    public SelectorGui(GuiScreen parentScreen, String mainTitle, List<String> list, String currentValue, String attributeName, boolean allowContinuing, boolean allowDynamicEditing, RenderType renderType, PairConsumer<String, String> onUpdatedCallback, PairConsumer<String, GuiScreen> onAdjustDynamicEntry, DataConsumer<GuiScreen> onAddDynamicEntry) {
+    public SelectorGui(Screen parentScreen, String mainTitle, List<String> list, String currentValue, String attributeName, boolean allowContinuing, boolean allowDynamicEditing, RenderType renderType, PairConsumer<String, String> onUpdatedCallback, PairConsumer<String, Screen> onAdjustDynamicEntry, DataConsumer<Screen> onAddDynamicEntry) {
         super(parentScreen);
         itemList = originalList = list;
         originalValue = currentValue;
@@ -67,11 +67,11 @@ public class SelectorGui extends ExtendedScreen {
         this.onAddDynamicEntry = onAddDynamicEntry;
     }
 
-    public SelectorGui(GuiScreen parentScreen, String mainTitle, List<String> list, String currentValue, String attributeName, boolean allowContinuing, boolean allowDynamicEditing, RenderType renderType, PairConsumer<String, GuiScreen> onAdjustDynamicEntry, DataConsumer<GuiScreen> onAddDynamicEntry) {
+    public SelectorGui(Screen parentScreen, String mainTitle, List<String> list, String currentValue, String attributeName, boolean allowContinuing, boolean allowDynamicEditing, RenderType renderType, PairConsumer<String, Screen> onAdjustDynamicEntry, DataConsumer<Screen> onAddDynamicEntry) {
         this(parentScreen, mainTitle, list, currentValue, attributeName, allowContinuing, allowDynamicEditing, renderType, null, onAdjustDynamicEntry, onAddDynamicEntry);
     }
 
-    public SelectorGui(GuiScreen parentScreen, String mainTitle, List<String> list, String currentValue, String attributeName, boolean allowContinuing, boolean allowDynamicEditing, PairConsumer<String, GuiScreen> onAdjustDynamicEntry, DataConsumer<GuiScreen> onAddDynamicEntry) {
+    public SelectorGui(Screen parentScreen, String mainTitle, List<String> list, String currentValue, String attributeName, boolean allowContinuing, boolean allowDynamicEditing, PairConsumer<String, Screen> onAdjustDynamicEntry, DataConsumer<Screen> onAddDynamicEntry) {
         this(parentScreen, mainTitle, list, currentValue, attributeName, allowContinuing, allowDynamicEditing, RenderType.None, onAdjustDynamicEntry, onAddDynamicEntry);
     }
 
@@ -112,7 +112,7 @@ public class SelectorGui extends ExtendedScreen {
 
             scrollList = addList(
                     new ScrollableListControl(
-                            mc,
+                            minecraft,
                             width, height,
                             32, height - 45, renderType != RenderType.None ? 45 : 18,
                             itemList, originalValue,

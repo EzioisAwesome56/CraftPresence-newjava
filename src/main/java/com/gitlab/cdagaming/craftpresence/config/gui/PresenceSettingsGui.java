@@ -30,7 +30,7 @@ import com.gitlab.cdagaming.craftpresence.utils.StringUtils;
 import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ExtendedButtonControl;
 import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ExtendedScreen;
 import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ExtendedTextControl;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.screen.Screen;
 import org.lwjgl.glfw.GLFW;
 
 @SuppressWarnings("DuplicatedCode")
@@ -40,7 +40,7 @@ public class PresenceSettingsGui extends ExtendedScreen {
             smallImageKeyFormat, largeImageKeyFormat;
     private ExtendedButtonControl nextPageButton, previousPageButton;
 
-    PresenceSettingsGui(GuiScreen parentScreen) {
+    PresenceSettingsGui(Screen parentScreen) {
         super(parentScreen);
     }
 

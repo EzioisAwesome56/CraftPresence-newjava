@@ -30,7 +30,7 @@ import com.gitlab.cdagaming.craftpresence.utils.StringUtils;
 import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ExtendedButtonControl;
 import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ExtendedScreen;
 import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ExtendedTextControl;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.screen.Screen;
 import org.lwjgl.glfw.GLFW;
 
 @SuppressWarnings("DuplicatedCode")
@@ -41,7 +41,7 @@ public class StatusMessagesGui extends ExtendedScreen {
             outerPlayerMessage, innerPlayerMessage, playerCoordsMessage, playerHealthMessage,
             playerAmountMessage, playerItemsMessage, worldMessage, modsMessage, viveCraftMessage, fallbackPackPlaceholderMessage;
 
-    StatusMessagesGui(GuiScreen parentScreen) {
+    StatusMessagesGui(Screen parentScreen) {
         super(parentScreen);
         this.pageNumber = 0;
     }

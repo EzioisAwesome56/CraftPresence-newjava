@@ -31,14 +31,14 @@ import com.gitlab.cdagaming.craftpresence.utils.UrlUtils;
 import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ExtendedButtonControl;
 import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ExtendedScreen;
 import com.gitlab.cdagaming.craftpresence.utils.updater.UpdateInfoGui;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.screen.Screen;
 
 import java.util.List;
 
 public class AboutGui extends ExtendedScreen {
     private static final String SOURCE_URL = "https://gitlab.com/CDAGaming/CraftPresence";
 
-    AboutGui(GuiScreen parentScreen) {
+    AboutGui(Screen parentScreen) {
         super(parentScreen);
     }
 

@@ -31,7 +31,7 @@ import com.gitlab.cdagaming.craftpresence.utils.StringUtils;
 import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ExtendedButtonControl;
 import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ExtendedScreen;
 import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ExtendedTextControl;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.screen.Screen;
 
 import java.util.Arrays;
 import java.util.List;
@@ -45,7 +45,7 @@ public class CharacterEditorGui extends ExtendedScreen {
     private int[] originalCharArray = StringUtils.MC_CHAR_WIDTH.clone();
     private byte[] originalGlyphArray = StringUtils.MC_GLYPH_WIDTH.clone();
 
-    public CharacterEditorGui(GuiScreen parentScreen) {
+    public CharacterEditorGui(Screen parentScreen) {
         super(parentScreen);
     }
 

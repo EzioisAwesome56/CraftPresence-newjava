@@ -32,12 +32,12 @@ import com.gitlab.cdagaming.craftpresence.utils.discord.rpc.entities.DiscordStat
 import com.gitlab.cdagaming.craftpresence.utils.discord.rpc.entities.PartyPrivacy;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import net.minecraft.client.gui.GuiConnecting;
-import net.minecraft.client.gui.GuiMainMenu;
+import net.minecraft.client.gui.screen.ConnectingScreen;
+import net.minecraft.client.gui.screen.MainMenuScreen;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.multiplayer.ServerList;
-import net.minecraft.client.network.NetHandlerPlayClient;
-import net.minecraft.client.network.NetworkPlayerInfo;
+import net.minecraft.client.network.play.ClientPlayNetHandler;
+import net.minecraft.client.network.play.NetworkPlayerInfo;
 
 import java.util.List;
 import java.util.Map;
@@ -148,7 +148,7 @@ public class ServerUtils {
     /**
      * The Player's Current Connection Data
      */
-    private NetHandlerPlayClient currentConnection;
+    private ClientPlayNetHandler currentConnection;
 
     /**
      * If the RPC needs to be Updated or Re-Synchronized<p>
@@ -237,7 +237,7 @@ public class ServerUtils {
      */
     private void updateServerData() {
         final ServerData newServerData = CraftPresence.instance.getCurrentServerData();
-        final NetHandlerPlayClient newConnection = CraftPresence.instance.getConnection();
+        final ClientPlayNetHandler newConnection = CraftPresence.instance.getConnection();
 
         if (!joinInProgress) {
             final List<NetworkPlayerInfo> newPlayerList = newConnection != null ? Lists.newArrayList(newConnection.getPlayerInfoMap()) : Lists.newArrayList();
@@ -461,7 +461,7 @@ public class ServerUtils {
                 CraftPresence.player.world.sendQuittingDisconnectingPacket();
                 CraftPresence.instance.loadWorld(null);
             }
-            CraftPresence.GUIS.openScreen(new GuiConnecting(CraftPresence.instance.currentScreen != null ? CraftPresence.instance.currentScreen : new GuiMainMenu(), CraftPresence.instance, serverData));
+            CraftPresence.GUIS.openScreen(new ConnectingScreen(CraftPresence.instance.currentScreen != null ? CraftPresence.instance.currentScreen : new MainMenuScreen(), CraftPresence.instance, serverData));
         } catch (Exception ex) {
             ex.printStackTrace();
         } finally {

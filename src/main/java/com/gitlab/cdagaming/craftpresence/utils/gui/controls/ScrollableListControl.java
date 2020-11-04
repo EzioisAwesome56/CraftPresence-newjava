@@ -32,7 +32,7 @@ import com.gitlab.cdagaming.craftpresence.utils.discord.assets.DiscordAssetUtils
 import com.gitlab.cdagaming.craftpresence.utils.gui.GuiUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiSlot;
+import net.minecraft.client.gui.SlotGui;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.util.ResourceLocation;
 
@@ -43,7 +43,7 @@ import java.util.List;
  *
  * @author CDAGaming
  */
-public class ScrollableListControl extends GuiSlot {
+public class ScrollableListControl extends SlotGui {
     /**
      * The Currently Selected Value in the List
      */
@@ -101,7 +101,7 @@ public class ScrollableListControl extends GuiSlot {
      * @return The Amount of Items in the List
      */
     @Override
-    protected int getSize() {
+    protected int getItemCount() {
         return itemList.size();
     }
 
@@ -115,7 +115,7 @@ public class ScrollableListControl extends GuiSlot {
     @Override
     public boolean mouseClicked(double mouseX, double mouseZ, int mouseButton) {
         if (isMouseInList(mouseX, mouseZ)) {
-            int scrollIndex = getEntryAt(mouseX, mouseZ);
+            int scrollIndex = getItemAtPosition(mouseX, mouseZ);
             if (scrollIndex != -1) {
                 currentValue = getSelectedItem(scrollIndex);
             }
@@ -130,7 +130,7 @@ public class ScrollableListControl extends GuiSlot {
      * @return {@code true} if the Slot Number is the Currently Selected Slot
      */
     @Override
-    public boolean isSelected(int slotIndex) {
+    public boolean isSelectedItem(int slotIndex) {
         return getSelectedItem(slotIndex).equals(currentValue);
     }
 
@@ -138,7 +138,7 @@ public class ScrollableListControl extends GuiSlot {
      * Renders the Background for this Control
      */
     @Override
-    protected void drawBackground() {
+    protected void renderBackground() {
         // N/A
     }
 
@@ -154,7 +154,7 @@ public class ScrollableListControl extends GuiSlot {
      * @param partialTicks The Current Partial Tick Ratio
      */
     @Override
-    protected void drawSlot(int slotIndex, int xPos, int yPos, int heightIn, int mouseXIn, int mouseYIn, float partialTicks) {
+    protected void renderItem(int slotIndex, int xPos, int yPos, int heightIn, int mouseXIn, int mouseYIn, float partialTicks) {
         int xOffset = xPos;
         String displayName = getSelectedItem(slotIndex);
         if (!CraftPresence.CONFIG.stripExtraGuiElements &&
@@ -210,7 +210,7 @@ public class ScrollableListControl extends GuiSlot {
      * @return The Current Font Renderer for this Control
      */
     public FontRenderer getFontRenderer() {
-        return mc.fontRenderer != null ? mc.fontRenderer : GuiUtils.getDefaultFontRenderer();
+        return minecraft.fontRenderer != null ? minecraft.fontRenderer : GuiUtils.getDefaultFontRenderer();
     }
 
     /**

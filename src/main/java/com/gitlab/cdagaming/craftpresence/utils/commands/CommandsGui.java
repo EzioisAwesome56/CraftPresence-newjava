@@ -40,7 +40,7 @@ import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ScrollableListContr
 import com.gitlab.cdagaming.craftpresence.utils.gui.impl.SelectorGui;
 import com.google.common.base.Functions;
 import com.google.common.collect.Lists;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.screen.Screen;
 import org.lwjgl.glfw.GLFW;
 
 import java.io.*;
@@ -56,7 +56,7 @@ public class CommandsGui extends ExtendedScreen {
     private String[] commandArgs, filteredCommandArgs;
     private List<String> tabCompletions = Lists.newArrayList();
 
-    public CommandsGui(GuiScreen parentScreen) {
+    public CommandsGui(Screen parentScreen) {
         super(parentScreen);
     }
 

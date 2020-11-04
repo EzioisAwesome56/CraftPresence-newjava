@@ -35,7 +35,7 @@ import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ScrollableListContr
 import com.gitlab.cdagaming.craftpresence.utils.gui.impl.CharacterEditorGui;
 import com.gitlab.cdagaming.craftpresence.utils.gui.impl.DynamicEditorGui;
 import com.gitlab.cdagaming.craftpresence.utils.gui.impl.SelectorGui;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.screen.Screen;
 
 import java.util.Arrays;
 
@@ -45,7 +45,7 @@ public class AdvancedSettingsGui extends ExtendedScreen {
             enablePerItemButton, enablePerEntityButton, renderTooltipsButton, formatWordsButton, debugModeButton, verboseModeButton;
     private ExtendedTextControl splitCharacter, refreshRate;
 
-    AdvancedSettingsGui(GuiScreen parentScreen) {
+    AdvancedSettingsGui(Screen parentScreen) {
         super(parentScreen);
     }
 

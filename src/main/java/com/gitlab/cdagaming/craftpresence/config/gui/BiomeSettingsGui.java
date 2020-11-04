@@ -34,14 +34,14 @@ import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ExtendedTextControl
 import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ScrollableListControl.RenderType;
 import com.gitlab.cdagaming.craftpresence.utils.gui.impl.DynamicEditorGui;
 import com.gitlab.cdagaming.craftpresence.utils.gui.impl.SelectorGui;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.screen.Screen;
 
 @SuppressWarnings("DuplicatedCode")
 public class BiomeSettingsGui extends ExtendedScreen {
     private ExtendedButtonControl proceedButton, biomeMessagesButton;
     private ExtendedTextControl defaultMessage;
 
-    BiomeSettingsGui(GuiScreen parentScreen) {
+    BiomeSettingsGui(Screen parentScreen) {
         super(parentScreen);
     }
 

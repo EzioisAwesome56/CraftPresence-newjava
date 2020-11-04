@@ -38,8 +38,8 @@ import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ExtendedScreen;
 import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ExtendedTextControl;
 import com.google.common.collect.Lists;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -102,7 +102,7 @@ public class GuiUtils {
     /**
      * The Current Instance of the Gui the player is in
      */
-    private GuiScreen CURRENT_SCREEN;
+    private Screen CURRENT_SCREEN;
 
     /**
      * Draws a Textured Rectangle (Modal Version), following the defined arguments
@@ -224,7 +224,7 @@ public class GuiUtils {
      */
     public void onTick() {
         enabled = !CraftPresence.CONFIG.hasChanged ? CraftPresence.CONFIG.enablePerGui : enabled;
-        isFocused = CraftPresence.instance.currentScreen != null && CraftPresence.instance.currentScreen.getFocused() != null && CraftPresence.instance.currentScreen.getFocused().canFocus();
+        isFocused = CraftPresence.instance.currentScreen != null && CraftPresence.instance.currentScreen.getFocused() != null && CraftPresence.instance.currentScreen.getFocused() != null;
         final boolean needsUpdate = enabled && (GUI_NAMES.isEmpty() || GUI_CLASSES.isEmpty());
 
         if (needsUpdate) {
@@ -259,8 +259,8 @@ public class GuiUtils {
      *
      * @param targetScreen The target Gui Screen to display
      */
-    public void openScreen(final GuiScreen targetScreen) {
-        CraftPresence.instance.addScheduledTask(() -> CraftPresence.instance.displayGuiScreen(targetScreen));
+    public void openScreen(final Screen targetScreen) {
+        CraftPresence.instance.execute(() -> CraftPresence.instance.displayGuiScreen(targetScreen));
     }
 
     /**
@@ -270,7 +270,7 @@ public class GuiUtils {
         if (CraftPresence.instance.currentScreen == null) {
             clearClientData();
         } else {
-            final GuiScreen newScreen = CraftPresence.instance.currentScreen;
+            final Screen newScreen = CraftPresence.instance.currentScreen;
             final Class<?> newScreenClass = newScreen.getClass();
             final String newScreenName = newScreenClass.getSimpleName();
 
@@ -297,7 +297,7 @@ public class GuiUtils {
      */
     public void getScreens() {
         final Class<?>[] searchClasses = new Class[]{
-                GuiScreen.class, GuiContainer.class
+                Screen.class, ContainerScreen.class
         };
 
         for (Class<?> classObj : FileUtils.getClassNamesMatchingSuperType(Arrays.asList(searchClasses), true, "net.minecraft", "com.gitlab.cdagaming.craftpresence")) {
