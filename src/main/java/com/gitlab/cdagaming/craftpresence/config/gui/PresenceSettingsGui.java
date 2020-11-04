@@ -31,7 +31,7 @@ import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ExtendedButtonContr
 import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ExtendedScreen;
 import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ExtendedTextControl;
 import net.minecraft.client.gui.GuiScreen;
-import org.lwjgl.input.Keyboard;
+import org.lwjgl.glfw.GLFW;
 
 @SuppressWarnings("DuplicatedCode")
 public class PresenceSettingsGui extends ExtendedScreen {
@@ -257,15 +257,15 @@ public class PresenceSettingsGui extends ExtendedScreen {
     }
 
     @Override
-    protected void keyTyped(char typedChar, int keyCode) {
-        if (keyCode == Keyboard.KEY_UP && pageNumber != 0) {
+    public boolean keyPressed(int keyCode, int mouseX, int mouseY) {
+        if (keyCode == GLFW.GLFW_KEY_UP && pageNumber != 0) {
             pageNumber--;
         }
 
-        if (keyCode == Keyboard.KEY_DOWN && pageNumber != 1) {
+        if (keyCode == GLFW.GLFW_KEY_DOWN && pageNumber != 1) {
             pageNumber++;
         }
 
-        super.keyTyped(typedChar, keyCode);
+        return super.keyPressed(keyCode, mouseX, mouseY);
     }
 }

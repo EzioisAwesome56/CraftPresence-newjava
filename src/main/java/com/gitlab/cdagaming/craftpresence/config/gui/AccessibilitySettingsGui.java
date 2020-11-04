@@ -36,7 +36,7 @@ import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ExtendedScreen;
 import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ExtendedTextControl;
 import com.gitlab.cdagaming.craftpresence.utils.gui.impl.ColorEditorGui;
 import net.minecraft.client.gui.GuiScreen;
-import org.lwjgl.input.Keyboard;
+import org.lwjgl.glfw.GLFW;
 
 public class AccessibilitySettingsGui extends ExtendedScreen {
 
@@ -393,11 +393,12 @@ public class AccessibilitySettingsGui extends ExtendedScreen {
     }
 
     @Override
-    protected void keyTyped(char typedChar, int keyCode) {
+    public boolean keyPressed(int keyCode, int mouseX, int mouseY) {
         if (entryData != null) {
             setKeyData(keyCode);
+            return true;
         } else {
-            super.keyTyped(typedChar, keyCode);
+            return super.keyPressed(keyCode, mouseX, mouseY);
         }
     }
 
@@ -426,7 +427,7 @@ public class AccessibilitySettingsGui extends ExtendedScreen {
 
         // Ensure a Valid KeyCode is entered
         if (!CraftPresence.KEYBINDINGS.isValidKeyCode(keyToSubmit)) {
-            keyToSubmit = Keyboard.KEY_NONE;
+            keyToSubmit = GLFW.GLFW_KEY_UNKNOWN;
         }
 
         final String formattedKey = CraftPresence.KEYBINDINGS.getKeyName(keyToSubmit);

@@ -29,7 +29,7 @@ import com.gitlab.cdagaming.craftpresence.ModUtils;
 import com.gitlab.cdagaming.craftpresence.impl.KeyConverter;
 import com.gitlab.cdagaming.craftpresence.impl.Pair;
 import com.google.common.collect.Lists;
-import org.lwjgl.input.Keyboard;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 
@@ -102,7 +102,7 @@ public class KeyUtils {
             } else {
                 // If no other Mapping Layer contains the KeyCode Name,
                 // Fallback to LWJGL Methods to retrieve the KeyCode Name
-                final String keyName = Keyboard.getKeyName(original);
+                final String keyName = GLFW.glfwGetKeyName(original, GLFW.glfwGetKeyScancode(original));
 
                 // If Key Name is not Empty or Null, use that, otherwise use original
                 if (!StringUtils.isNullOrEmpty(keyName)) {
@@ -123,9 +123,9 @@ public class KeyUtils {
      * Implemented @ {@link CommandUtils#reloadData}
      */
     void onTick() {
-        if (Keyboard.isCreated() && CraftPresence.CONFIG != null) {
+        if (CraftPresence.instance.mainWindow != null && CraftPresence.CONFIG != null) {
             try {
-                if (isValidKeyCode(CraftPresence.CONFIG.configKeyCode) && Keyboard.isKeyDown(CraftPresence.CONFIG.configKeyCode) && !CraftPresence.GUIS.isFocused && !CraftPresence.GUIS.openConfigGUI && !CraftPresence.GUIS.configGUIOpened) {
+                if (isValidKeyCode(CraftPresence.CONFIG.configKeyCode) && GLFW.glfwGetKey(CraftPresence.instance.mainWindow.getHandle(), CraftPresence.CONFIG.configKeyCode) == GLFW.GLFW_PRESS && !CraftPresence.GUIS.isFocused && !CraftPresence.GUIS.openConfigGUI && !CraftPresence.GUIS.configGUIOpened) {
                     CraftPresence.GUIS.openConfigGUI = true;
                 }
             } catch (Exception | Error ex) {

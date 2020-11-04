@@ -53,7 +53,7 @@ import java.util.TimerTask;
  *
  * @author CDAGaming
  */
-@Mod(modid = ModUtils.MOD_ID, version = "@VERSION_ID@", clientSideOnly = true, guiFactory = ModUtils.GUI_FACTORY, canBeDeactivated = true, updateJSON = ModUtils.UPDATE_JSON, certificateFingerprint = ModUtils.FINGERPRINT, acceptedMinecraftVersions = "*")
+@Mod(ModUtils.MOD_ID)
 public class CraftPresence {
     /**
      * Whether Pack Data was able to be Found and Parsed
@@ -73,7 +73,7 @@ public class CraftPresence {
     /**
      * The Minecraft Instance attached to this Mod
      */
-    public static Minecraft instance = Minecraft.getMinecraft();
+    public static Minecraft instance = Minecraft.getInstance();
 
     /**
      * The Current Player detected from the Minecraft Instance
@@ -237,7 +237,7 @@ public class CraftPresence {
     private void clientTick() {
         if (!closing) {
             if (initialized) {
-                instance = Minecraft.getMinecraft();
+                instance = Minecraft.getInstance();
                 player = instance.player;
 
                 // Synchronize Developer and Verbose Modes with Config Options, if they were not overridden pre-setup

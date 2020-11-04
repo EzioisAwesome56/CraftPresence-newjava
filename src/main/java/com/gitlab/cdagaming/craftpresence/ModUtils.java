@@ -31,7 +31,6 @@ import com.gitlab.cdagaming.craftpresence.utils.updater.ModUpdaterUtils;
 import com.google.common.collect.Lists;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Minecraft;
-import net.minecraft.launchwrapper.Launch;
 import net.minecraft.realms.RealmsSharedConstants;
 
 import java.io.*;
@@ -109,7 +108,7 @@ public class ModUtils {
     /**
      * The Detected Username within Minecraft
      */
-    public static final String USERNAME = Minecraft.getMinecraft().getSession().getUsername();
+    public static final String USERNAME = Minecraft.getInstance().getSession().getUsername();
 
     /**
      * The URL to receive Update Information from
@@ -134,7 +133,7 @@ public class ModUtils {
     /**
      * The Application's Instance of {@link TranslationUtils} for Localization and Translating Data Strings
      */
-    public static final TranslationUtils TRANSLATOR = new TranslationUtils(MOD_ID, false);
+    public static final TranslationUtils TRANSLATOR = new TranslationUtils(MOD_ID, true);
 
     /**
      * The Application's Instance of {@link ModUpdaterUtils} for Retrieving if the Application has an update
@@ -154,7 +153,7 @@ public class ModUtils {
     /**
      * If this Application is running in a de-obfuscated or Developer environment
      */
-    public static boolean IS_VERBOSE = (Launch.blackboard != null && !Launch.blackboard.isEmpty() && Launch.blackboard.containsKey("fml.deobfuscatedEnvironment")) && (boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment");
+    public static boolean IS_VERBOSE = false;
 
     static {
         NAME = "@MOD_NAME@";

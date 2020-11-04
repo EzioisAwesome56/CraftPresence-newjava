@@ -33,9 +33,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
 import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.client.renderer.texture.NativeImage;
 import net.minecraft.util.ResourceLocation;
 
-import javax.imageio.ImageIO;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -122,7 +122,7 @@ public class ImageUtils {
                                             }
                                         }
                                     } else {
-                                        bufferData.getSecond().add(new ImageFrame(ImageIO.read(streamData)));
+                                        bufferData.getSecond().add(new ImageFrame(NativeImage.read(streamData)));
                                     }
                                     cachedImages.get(request.getFirst()).setSecond(bufferData);
                                     cachedImages.get(request.getFirst()).setThird(new ArrayList<>(bufferData.getSecond().size()));
@@ -267,7 +267,7 @@ public class ImageUtils {
                     return texLocation;
                 }
                 try {
-                    final DynamicTexture dynTexture = new DynamicTexture(bufferData.getSecond().get(bufferData.getFirst()).getImage());
+                    final DynamicTexture dynTexture = new DynamicTexture(bufferData.getSecond().get(bufferData.getFirst()).getNativeImage());
                     final ResourceLocation cachedTexture = CraftPresence.instance.getTextureManager().getDynamicTextureLocation(textureName + (textureName.endsWith(".gif") ? "_" + cachedImages.get(textureName).getSecond().getFirst() : ""), dynTexture);
                     if (bufferData.getSecond().get(bufferData.getFirst()).shouldRenderNext()) {
                         if (doesContinue) {

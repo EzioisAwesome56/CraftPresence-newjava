@@ -33,10 +33,9 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import org.lwjgl.input.Keyboard;
+import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -94,11 +93,11 @@ public class ExtendedScreen extends GuiScreen {
     @Override
     public void initGui() {
         // Clear Data before Initialization
-        buttonList.clear();
+        buttons.clear();
         extendedControls.clear();
         extendedLists.clear();
 
-        Keyboard.enableRepeatEvents(true);
+        mc.keyboardListener.enableRepeatEvents(true);
         initializeUi();
         super.initGui();
         initialized = true;
@@ -148,8 +147,8 @@ public class ExtendedScreen extends GuiScreen {
      */
     @Nonnull
     protected <T extends Gui> T addControl(@Nonnull T buttonIn) {
-        if (buttonIn instanceof GuiButton && !buttonList.contains(buttonIn)) {
-            buttonList.add((GuiButton) buttonIn);
+        if (buttonIn instanceof GuiButton && !buttons.contains(buttonIn)) {
+            buttons.add((GuiButton) buttonIn);
         }
         if (!extendedControls.contains(buttonIn)) {
             extendedControls.add(buttonIn);
@@ -209,7 +208,7 @@ public class ExtendedScreen extends GuiScreen {
      * @param partialTicks The Rendering Tick Rate
      */
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+    public void render(int mouseX, int mouseY, float partialTicks) {
         // Ensures initialization events have run first, preventing an NPE
         if (initialized) {
             renderCriticalData();
@@ -220,13 +219,17 @@ public class ExtendedScreen extends GuiScreen {
             }
 
             for (Gui extendedControl : extendedControls) {
+                if (extendedControl instanceof ExtendedButtonControl) {
+                    final ExtendedButtonControl button = (ExtendedButtonControl) extendedControl;
+                    button.render(mouseX, mouseY, partialTicks);
+                }
                 if (extendedControl instanceof ExtendedTextControl) {
                     final ExtendedTextControl textField = (ExtendedTextControl) extendedControl;
-                    textField.drawTextBox();
+                    textField.drawTextField(mouseX, mouseY, partialTicks);
                 }
             }
 
-            super.drawScreen(mouseX, mouseY, partialTicks);
+            super.render(mouseX, mouseY, partialTicks);
 
             lastMouseX = mouseX;
             lastMouseY = mouseY;
@@ -245,50 +248,56 @@ public class ExtendedScreen extends GuiScreen {
     }
 
     /**
-     * Event to trigger upon Mouse Input
+     * Event to trigger upon Pressing a Key
      *
-     * @throws IOException if error occurs in event trigger
+     * @param keyCode The KeyCode entered, if any
+     * @param mouseX  The Event Mouse X Coordinate
+     * @param mouseY  The Event Mouse Y Coordinate
+     * @return The Event Result
      */
     @Override
-    public void handleMouseInput() throws IOException {
-        for (ScrollableListControl listControl : extendedLists) {
-            listControl.handleMouseInput();
-        }
-        super.handleMouseInput();
-    }
-
-    /**
-     * Event to trigger upon Button Action, including onClick Events
-     *
-     * @param button The Button to trigger upon
-     * @throws IOException if error occurs in event trigger
-     */
-    @Override
-    protected void actionPerformed(@Nonnull GuiButton button) throws IOException {
-        if (button instanceof ExtendedButtonControl) {
-            ((ExtendedButtonControl) button).onClick();
-        }
-        super.actionPerformed(button);
-    }
-
-    /**
-     * Event to trigger upon Typing a Key
-     *
-     * @param typedChar The typed Character, if any
-     * @param keyCode   The KeyCode entered, if any
-     */
-    @Override
-    protected void keyTyped(char typedChar, int keyCode) {
-        if (keyCode == Keyboard.KEY_ESCAPE) {
+    public boolean keyPressed(int keyCode, int mouseX, int mouseY) {
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
             CraftPresence.GUIS.openScreen(parentScreen);
         }
 
         for (Gui extendedControl : extendedControls) {
+            if (extendedControl instanceof ExtendedButtonControl) {
+                final ExtendedButtonControl button = (ExtendedButtonControl) extendedControl;
+                button.keyPressed(keyCode, mouseX, mouseY);
+            }
             if (extendedControl instanceof ExtendedTextControl) {
                 final ExtendedTextControl textField = (ExtendedTextControl) extendedControl;
-                textField.textboxKeyTyped(typedChar, keyCode);
+                textField.keyPressed(keyCode, mouseX, mouseY);
             }
         }
+        return super.keyPressed(keyCode, mouseX, mouseY);
+    }
+
+    /**
+     * Event to trigger upon Typing a Character
+     *
+     * @param typedChar The typed Character, if any
+     * @param keyCode   The KeyCode entered, if any
+     * @return The Event Result
+     */
+    @Override
+    public boolean charTyped(char typedChar, int keyCode) {
+        for (ScrollableListControl listControl : extendedLists) {
+            listControl.charTyped(typedChar, keyCode);
+        }
+
+        for (Gui extendedControl : extendedControls) {
+            if (extendedControl instanceof ExtendedButtonControl) {
+                final ExtendedButtonControl button = (ExtendedButtonControl) extendedControl;
+                button.charTyped(typedChar, keyCode);
+            }
+            if (extendedControl instanceof ExtendedTextControl) {
+                final ExtendedTextControl textField = (ExtendedTextControl) extendedControl;
+                textField.charTyped(typedChar, keyCode);
+            }
+        }
+        return super.charTyped(typedChar, keyCode);
     }
 
     /**
@@ -297,30 +306,129 @@ public class ExtendedScreen extends GuiScreen {
      * @param mouseX      The Event Mouse X Coordinate
      * @param mouseY      The Event Mouse Y Coordinate
      * @param mouseButton The Event Mouse Button Clicked
-     * @throws IOException if error occurs in event trigger
+     * @return The Event Result
      */
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
+        for (ScrollableListControl listControl : extendedLists) {
+            listControl.mouseClicked(mouseX, mouseY, mouseButton);
+        }
+
         for (Gui extendedControl : extendedControls) {
+            if (extendedControl instanceof ExtendedButtonControl) {
+                final ExtendedButtonControl button = (ExtendedButtonControl) extendedControl;
+                button.mouseClicked(mouseX, mouseY, mouseButton);
+            }
             if (extendedControl instanceof ExtendedTextControl) {
                 final ExtendedTextControl textField = (ExtendedTextControl) extendedControl;
                 textField.mouseClicked(mouseX, mouseY, mouseButton);
             }
         }
-        super.mouseClicked(mouseX, mouseY, mouseButton);
+        return super.mouseClicked(mouseX, mouseY, mouseButton);
+    }
+
+    /**
+     * Event to trigger upon scrolling the mouse
+     *
+     * @param scrollAmount The Scroll Amount
+     * @return The Event Result
+     */
+    @Override
+    public boolean mouseScrolled(final double scrollAmount) {
+        for (ScrollableListControl listControl : extendedLists) {
+            listControl.mouseScrolled(scrollAmount);
+        }
+
+        for (Gui extendedControl : extendedControls) {
+            if (extendedControl instanceof ExtendedButtonControl) {
+                final ExtendedButtonControl button = (ExtendedButtonControl) extendedControl;
+                button.mouseScrolled(scrollAmount);
+            }
+            if (extendedControl instanceof ExtendedTextControl) {
+                final ExtendedTextControl textField = (ExtendedTextControl) extendedControl;
+                textField.mouseScrolled(scrollAmount);
+            }
+        }
+        return super.mouseScrolled(scrollAmount);
+    }
+
+    /**
+     * Event to Trigger upon Dragging the Mouse
+     *
+     * @param mouseX      The Event Mouse X Coordinate
+     * @param mouseY      The Event Mouse Y Coordinate
+     * @param mouseButton The Event Mouse Button Clicked
+     * @param scrollX     The Scroll Amount for the Mouse X Coordinate
+     * @param scrollY     The Scroll Amount for the Mouse Y Coordinate
+     * @return The Event Result
+     */
+    @Override
+    public boolean mouseDragged(final double mouseX, final double mouseY, final int mouseButton, final double scrollX, final double scrollY) {
+        for (ScrollableListControl listControl : extendedLists) {
+            listControl.mouseDragged(mouseX, mouseY, mouseButton, scrollX, scrollY);
+        }
+
+        for (Gui extendedControl : extendedControls) {
+            if (extendedControl instanceof ExtendedButtonControl) {
+                final ExtendedButtonControl button = (ExtendedButtonControl) extendedControl;
+                button.mouseDragged(mouseX, mouseY, mouseButton, scrollX, scrollY);
+            }
+            if (extendedControl instanceof ExtendedTextControl) {
+                final ExtendedTextControl textField = (ExtendedTextControl) extendedControl;
+                textField.mouseDragged(mouseX, mouseY, mouseButton, scrollX, scrollY);
+            }
+        }
+        return super.mouseDragged(mouseX, mouseY, mouseButton, scrollX, scrollY);
+    }
+
+    /**
+     * Event to Trigger upon Releasing the Mouse
+     *
+     * @param mouseX      The Event Mouse X Coordinate
+     * @param mouseY      The Event Mouse Y Coordinate
+     * @param mouseButton The Event Mouse Button Clicked
+     * @return The Event Result
+     */
+    @Override
+    public boolean mouseReleased(final double mouseX, final double mouseY, final int mouseButton) {
+        for (ScrollableListControl listControl : extendedLists) {
+            listControl.mouseReleased(mouseX, mouseY, mouseButton);
+        }
+
+        for (Gui extendedControl : extendedControls) {
+            if (extendedControl instanceof ExtendedButtonControl) {
+                final ExtendedButtonControl button = (ExtendedButtonControl) extendedControl;
+                button.mouseReleased(mouseX, mouseY, mouseButton);
+            }
+            if (extendedControl instanceof ExtendedTextControl) {
+                final ExtendedTextControl textField = (ExtendedTextControl) extendedControl;
+                textField.mouseReleased(mouseX, mouseY, mouseButton);
+            }
+        }
+        return super.mouseReleased(mouseX, mouseY, mouseButton);
     }
 
     /**
      * Event to trigger on each tick
      */
     @Override
-    public void updateScreen() {
+    public void tick() {
         for (Gui extendedControl : extendedControls) {
             if (extendedControl instanceof ExtendedTextControl) {
                 final ExtendedTextControl textField = (ExtendedTextControl) extendedControl;
-                textField.updateCursorCounter();
+                textField.tick();
             }
         }
+    }
+
+    /**
+     * Decide whether the Screen can close with Vanilla Methods
+     *
+     * @return whether the Screen can close with Vanilla Methods
+     */
+    @Override
+    public boolean allowCloseWithEscape() {
+        return false;
     }
 
     /**
@@ -330,7 +438,7 @@ public class ExtendedScreen extends GuiScreen {
     public void onGuiClosed() {
         initialized = false;
         CraftPresence.GUIS.resetIndex();
-        Keyboard.enableRepeatEvents(false);
+        mc.keyboardListener.enableRepeatEvents(false);
     }
 
     /**

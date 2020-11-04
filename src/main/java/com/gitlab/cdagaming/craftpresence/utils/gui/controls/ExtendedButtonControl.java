@@ -28,12 +28,10 @@ import com.gitlab.cdagaming.craftpresence.CraftPresence;
 import com.gitlab.cdagaming.craftpresence.utils.ImageUtils;
 import com.gitlab.cdagaming.craftpresence.utils.StringUtils;
 import com.gitlab.cdagaming.craftpresence.utils.gui.GuiUtils;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.util.ResourceLocation;
 
-import javax.annotation.Nonnull;
 import java.io.File;
 
 /**
@@ -184,8 +182,7 @@ public class ExtendedButtonControl extends GuiButton {
     }
 
     @Override
-    public void drawButton(@Nonnull Minecraft mc, int mouseX, int mouseY, float partialTicks) {
-        setCurrentFontRender(mc.fontRenderer);
+    public void render(int mouseX, int mouseY, float partialTicks) {
         if (visible) {
             hovered = CraftPresence.GUIS.isMouseOver(mouseX, mouseY, this);
             final int hoverState = getHoverState(hovered);
@@ -219,7 +216,7 @@ public class ExtendedButtonControl extends GuiButton {
                 CraftPresence.GUIS.renderButton(getControlPosX(), getControlPosY(), getControlWidth(), getControlHeight(), hoverState, zLevel, texLocation);
             }
 
-            mouseDragged(mc, mouseX, mouseY);
+            renderBg(CraftPresence.instance, mouseX, mouseY);
             final int color;
 
             if (!enabled) {
@@ -322,6 +319,18 @@ public class ExtendedButtonControl extends GuiButton {
         if (onPushEvent != null) {
             onPushEvent.run();
         }
+    }
+
+    /**
+     * Event to trigger upon Button Action, including onClick Events
+     *
+     * @param mouseX    The Event Mouse X Coordinate
+     * @param mouseY    The Event Mouse Y Coordinate
+     */
+    @Override
+    public void onClick(double mouseX, double mouseY) {
+        onClick();
+        super.onClick(mouseX, mouseY);
     }
 
     /**

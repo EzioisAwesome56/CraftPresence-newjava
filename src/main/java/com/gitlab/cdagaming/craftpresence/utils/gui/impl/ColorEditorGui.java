@@ -38,7 +38,7 @@ import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ExtendedTextControl
 import com.gitlab.cdagaming.craftpresence.utils.gui.controls.SliderControl;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.ResourceLocation;
-import org.lwjgl.input.Keyboard;
+import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
 import java.io.File;
@@ -301,19 +301,19 @@ public class ColorEditorGui extends ExtendedScreen {
     }
 
     @Override
-    protected void keyTyped(char typedChar, int keyCode) {
-        if (keyCode == Keyboard.KEY_UP && pageNumber != 0) {
+    public boolean keyPressed(int keyCode, int mouseX, int mouseY) {
+        if (keyCode == GLFW.GLFW_KEY_UP && pageNumber != 0) {
             pageNumber--;
             initValues();
             syncValues();
         }
 
-        if (keyCode == Keyboard.KEY_DOWN && pageNumber != 1) {
+        if (keyCode == GLFW.GLFW_KEY_DOWN && pageNumber != 1) {
             pageNumber++;
             initValues();
             syncValues();
         }
-        super.keyTyped(typedChar, keyCode);
+        return super.keyPressed(keyCode, mouseX, mouseY);
     }
 
     /**
