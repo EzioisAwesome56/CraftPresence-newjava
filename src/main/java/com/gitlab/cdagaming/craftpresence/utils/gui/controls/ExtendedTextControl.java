@@ -27,6 +27,7 @@ package com.gitlab.cdagaming.craftpresence.utils.gui.controls;
 import com.gitlab.cdagaming.craftpresence.CraftPresence;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.text.LiteralText;
 
 import javax.annotation.Nonnull;
 
@@ -52,7 +53,7 @@ public class ExtendedTextControl extends TextFieldWidget {
      * @param heightIn        The Height for this Control
      */
     public ExtendedTextControl(int componentId, TextRenderer fontRendererObj, int x, int y, int widthIn, int heightIn) {
-        super(fontRendererObj, x, y, widthIn, heightIn, "");
+        super(fontRendererObj, x, y, widthIn, heightIn, new LiteralText(""));
     }
 
     /**

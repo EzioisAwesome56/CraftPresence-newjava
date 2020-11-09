@@ -247,7 +247,7 @@ public class ServerUtils {
             int newMaxPlayers;
             if (newServerData != null) {
                 try {
-                    newMaxPlayers = StringUtils.getValidInteger(StringUtils.stripColors(newServerData.playerCountLabel).split("/")[1]).getSecond();
+                    newMaxPlayers = StringUtils.getValidInteger(StringUtils.stripColors(newServerData.playerCountLabel.getString()).split("/")[1]).getSecond();
 
                     if (newMaxPlayers < newCurrentPlayers) {
                         newMaxPlayers = newCurrentPlayers + 1;
@@ -260,14 +260,15 @@ public class ServerUtils {
             }
 
             final boolean newLANStatus = (CraftPresence.instance.isInSingleplayer() && newCurrentPlayers > 1) || (newServerData != null && newServerData.isLocal());
+            final boolean isMotdValid = newServerData != null && newServerData.label != null && !StringUtils.isNullOrEmpty(newServerData.label.getString());
 
             final String newServer_IP = newServerData != null && !StringUtils.isNullOrEmpty(newServerData.address) ? newServerData.address : "127.0.0.1";
             final String newServer_Name = newServerData != null && !StringUtils.isNullOrEmpty(newServerData.name) ? newServerData.name : CraftPresence.CONFIG.defaultServerName;
-            final String newServer_MOTD = !isOnLAN && !CraftPresence.instance.isInSingleplayer() && (newServerData != null && !StringUtils.isNullOrEmpty(newServerData.label)) &&
-                    !(newServerData.label.equalsIgnoreCase(ModUtils.TRANSLATOR.translate("craftpresence.multiplayer.status.cannot_connect")) ||
-                            newServerData.label.equalsIgnoreCase(ModUtils.TRANSLATOR.translate("craftpresence.multiplayer.status.cannot_resolve")) ||
-                            newServerData.label.equalsIgnoreCase(ModUtils.TRANSLATOR.translate("craftpresence.multiplayer.status.polling")) ||
-                            newServerData.label.equalsIgnoreCase(ModUtils.TRANSLATOR.translate("craftpresence.multiplayer.status.pinging"))) ? StringUtils.stripColors(newServerData.label) : CraftPresence.CONFIG.defaultServerMotd;
+            final String newServer_MOTD = !isOnLAN && !CraftPresence.instance.isInSingleplayer() && (newServerData != null && isMotdValid) &&
+                    !(newServerData.label.getString().equalsIgnoreCase(ModUtils.TRANSLATOR.translate("craftpresence.multiplayer.status.cannot_connect")) ||
+                            newServerData.label.getString().equalsIgnoreCase(ModUtils.TRANSLATOR.translate("craftpresence.multiplayer.status.cannot_resolve")) ||
+                            newServerData.label.getString().equalsIgnoreCase(ModUtils.TRANSLATOR.translate("craftpresence.multiplayer.status.polling")) ||
+                            newServerData.label.getString().equalsIgnoreCase(ModUtils.TRANSLATOR.translate("craftpresence.multiplayer.status.pinging"))) ? StringUtils.stripColors(newServerData.label.getString()) : CraftPresence.CONFIG.defaultServerMotd;
 
             if (newLANStatus != isOnLAN || ((newServerData != null && !newServerData.equals(currentServerData)) ||
                     (newServerData == null && currentServerData != null)) ||
@@ -308,7 +309,7 @@ public class ServerUtils {
 
                     // &health& Argument = Current and Maximum Health of Player
                     if (CraftPresence.CONFIG.innerPlayerPlaceholderMessage.toLowerCase().contains("&health&")) {
-                        final Pair<Double, Double> newHealth = CraftPresence.player != null ? new Pair<>(StringUtils.roundDouble(CraftPresence.player.getHealth(), 0), StringUtils.roundDouble(CraftPresence.player.getMaximumHealth(), 0)) : new Pair<>(0.0D, 0.0D);
+                        final Pair<Double, Double> newHealth = CraftPresence.player != null ? new Pair<>(StringUtils.roundDouble(CraftPresence.player.getHealth(), 0), StringUtils.roundDouble(CraftPresence.player.getMaxHealth(), 0)) : new Pair<>(0.0D, 0.0D);
                         if (!newHealth.equals(currentHealth)) {
                             currentHealth = newHealth;
                             queuedForUpdate = true;
@@ -331,7 +332,7 @@ public class ServerUtils {
 
                     // &worldname& Argument = Current Name of the World
                     if (CraftPresence.CONFIG.worldPlaceholderMessage.toLowerCase().contains("&worldname&")) {
-                        final String newWorldName = CraftPresence.player != null ? CraftPresence.player.world.getLevelProperties().getLevelName() : "";
+                        final String newWorldName = CraftPresence.player != null ? CraftPresence.instance.getServer().getSaveProperties().getLevelName() : "";
                         if (!newWorldName.equals(currentWorldName)) {
                             currentWorldName = newWorldName;
                             queuedForUpdate = true;

@@ -86,12 +86,12 @@ public class CharacterEditorGui extends ExtendedScreen {
                             // Sync ALL Values to FontRender Defaults
                             for (int currentCharIndex = 0; currentCharIndex < StringUtils.MC_CHAR_WIDTH.length - 1; currentCharIndex++) {
                                 final char characterObj = (char) (currentCharIndex);
-                                StringUtils.MC_CHAR_WIDTH[currentCharIndex] = getFontRenderer().getStringWidth(Character.toString(characterObj));
+                                StringUtils.MC_CHAR_WIDTH[currentCharIndex] = getFontRenderer().getWidth(Character.toString(characterObj));
                             }
 
                             for (int currentGlyphIndex = 0; currentGlyphIndex < StringUtils.MC_GLYPH_WIDTH.length - 1; currentGlyphIndex++) {
                                 final char glyphObj = (char) (currentGlyphIndex & 255);
-                                StringUtils.MC_GLYPH_WIDTH[currentGlyphIndex] = (byte) getFontRenderer().getStringWidth(Character.toString(glyphObj));
+                                StringUtils.MC_GLYPH_WIDTH[currentGlyphIndex] = (byte) getFontRenderer().getWidth(Character.toString(glyphObj));
                             }
                         }
                 )
@@ -104,9 +104,9 @@ public class CharacterEditorGui extends ExtendedScreen {
                         () -> {
                             // Sync Single Value to FontRender Defaults
                             if (lastScannedChar > 0 && lastScannedChar < StringUtils.MC_CHAR_WIDTH.length && !ModUtils.TRANSLATOR.isUnicode) {
-                                StringUtils.MC_CHAR_WIDTH[lastScannedChar] = getFontRenderer().getStringWidth(Character.toString(lastScannedChar));
+                                StringUtils.MC_CHAR_WIDTH[lastScannedChar] = getFontRenderer().getWidth(Character.toString(lastScannedChar));
                             } else if (StringUtils.MC_GLYPH_WIDTH[lastScannedChar] != 0) {
-                                StringUtils.MC_GLYPH_WIDTH[lastScannedChar & 255] = (byte) getFontRenderer().getStringWidth(Character.toString(lastScannedChar));
+                                StringUtils.MC_GLYPH_WIDTH[lastScannedChar & 255] = (byte) getFontRenderer().getWidth(Character.toString(lastScannedChar));
                             }
                         }
                 )

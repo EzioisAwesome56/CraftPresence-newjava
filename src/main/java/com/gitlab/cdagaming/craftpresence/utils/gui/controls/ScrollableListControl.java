@@ -33,9 +33,10 @@ import com.gitlab.cdagaming.craftpresence.utils.gui.GuiUtils;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.widget.ListWidget;
+import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.util.Identifier;
+import net.minecraft.client.util.math.MatrixStack;
 
 import java.util.List;
 
@@ -44,7 +45,7 @@ import java.util.List;
  *
  * @author CDAGaming
  */
-public class ScrollableListControl extends ListWidget {
+public class ScrollableListControl extends AlwaysSelectedEntryListWidget<ScrollableListControl.StringEntry> {
     /**
      * The Currently Selected Value in the List
      */
@@ -94,6 +95,16 @@ public class ScrollableListControl extends ListWidget {
         this.itemList = itemList;
         this.currentValue = currentValue;
         this.renderType = renderType;
+
+        updateEntries();
+    }
+
+    @Override
+    public void setSelected(StringEntry entry) {
+        super.setSelected(entry);
+        if (entry != null) {
+            currentValue = entry.displayName;
+        }
     }
 
     /**
@@ -107,101 +118,141 @@ public class ScrollableListControl extends ListWidget {
     }
 
     /**
-     * The Event to Occur if a Slot/Element is Clicked within the List
-     *
-     * @param mouseX      The Mouse's Current X Position
-     * @param mouseZ      The Mouse's Current Y Position
-     * @param mouseButton Which Mouse Button was Clicked
-     */
-    @Override
-    public boolean mouseClicked(double mouseX, double mouseZ, int mouseButton) {
-        if (isMouseInList(mouseX, mouseZ)) {
-            int scrollIndex = getItemAtPosition(mouseX, mouseZ);
-            if (scrollIndex != -1) {
-                currentValue = getSelectedItem(scrollIndex);
-            }
-        }
-        return super.mouseClicked(mouseX, mouseZ, mouseButton);
-    }
-
-    /**
-     * Whether the Specified Slot Number is the Currently Selected Slot
-     *
-     * @param slotIndex The Slot's ID Number to check
-     * @return {@code true} if the Slot Number is the Currently Selected Slot
-     */
-    @Override
-    public boolean isSelectedItem(int slotIndex) {
-        return getSelectedItem(slotIndex).equals(currentValue);
-    }
-
-    /**
      * Renders the Background for this Control
      */
     @Override
-    protected void renderBackground() {
-        // N/A
-    }
-
-    /**
-     * Renders the Slots for this Control
-     *
-     * @param slotIndex    The Slot Identification Number
-     * @param xPos         The Starting X Position to render the Object at
-     * @param yPos         The Starting Y Position to render the Object at
-     * @param heightIn     The Height for the Object to render to
-     * @param mouseXIn     The Mouse's Current X Position
-     * @param mouseYIn     The Mouse's Current Y Position
-     * @param partialTicks The Current Partial Tick Ratio
-     */
-    @Override
-    protected void renderItem(int slotIndex, int xPos, int yPos, int heightIn, int mouseXIn, int mouseYIn, float partialTicks) {
-        int xOffset = xPos;
-        String displayName = getSelectedItem(slotIndex);
-        if (!CraftPresence.CONFIG.stripExtraGuiElements &&
-                (renderType == RenderType.DiscordAsset || (renderType == RenderType.ServerData && CraftPresence.SERVER.enabled) || (renderType == RenderType.EntityData && CraftPresence.ENTITIES.enabled) || (renderType == RenderType.ItemData && CraftPresence.TILE_ENTITIES.enabled))) {
-            Identifier texture = new Identifier("");
-            String assetUrl;
-
-            if (renderType == RenderType.ServerData) {
-                final ServerInfo data = CraftPresence.SERVER.getDataFromName(displayName);
-
-                if (data != null) {
-                    assetUrl = StringUtils.UNKNOWN_BASE64_ID + "," + data.getIcon();
-                    texture = ImageUtils.getTextureFromUrl(displayName, new Pair<>(ImageUtils.InputType.ByteStream, assetUrl));
-                }
-            } else if (renderType == RenderType.DiscordAsset) {
-                assetUrl = DiscordAssetUtils.getAssetUrl(CraftPresence.CONFIG.clientId, displayName, true);
-                texture = ImageUtils.getTextureFromUrl(displayName, assetUrl);
-            } else if (renderType == RenderType.EntityData) {
-                if (StringUtils.isValidUuid(displayName)) {
-                    // If the entity is classified as a Uuid, assume it is a player's and get their altFace texture
-                    displayName = displayName.replaceAll("-", "");
-                    texture = ImageUtils.getTextureFromUrl(displayName, "https://crafatar.com/avatars/" + displayName);
-                }
-            } else if (renderType == RenderType.ItemData) {
-                texture = CraftPresence.TILE_ENTITIES.TILE_ENTITY_RESOURCES.getOrDefault(displayName, texture);
-            }
-            if (!ImageUtils.isTextureNull(texture)) {
-                CraftPresence.GUIS.drawTextureRect(0.0D, xOffset, yPos + 4.5, 32, 32, 0, texture);
-            }
-            // Note: 35 Added to xOffset to accommodate for Image Size
-            xOffset += 35;
+    protected void renderBackground(MatrixStack matrixStack) {
+        if (getItemCount() != children().size()) {
+            clearEntries();
+            updateEntries();
         }
-        getFontRenderer().drawWithShadow(displayName, xOffset, yPos + ((heightIn / 2f) - (getFontRenderer().fontHeight / 2f)), 0xFFFFFF);
     }
 
     /**
-     * Attempts to Retrieve the Slot Item Name from the Slot's ID Number
-     *
-     * @param slotIndex The Slot's ID Number
-     * @return The Name of the found slot, if any
+     * Updates the Entries in this List
      */
-    public String getSelectedItem(int slotIndex) {
-        try {
-            return itemList.get(slotIndex);
-        } catch (Exception ex) {
-            return null;
+    public void updateEntries() {
+        for (String item : itemList) {
+            StringEntry dataEntry = new StringEntry(item, renderType);
+            this.addEntry(dataEntry);
+            if (item.equals(currentValue)) {
+                this.setSelected(dataEntry);
+            }
+        }
+
+        if (this.getSelected() != null) {
+            this.centerScrollOn(this.getSelected());
+        }
+    }
+
+    /**
+     * Gui Entry for a Scrollable List
+     *
+     * @author CDAGaming
+     */
+    public class StringEntry extends AlwaysSelectedEntryListWidget.Entry<StringEntry> {
+        /**
+         * The name of this Entry
+         */
+        private String displayName;
+        /**
+         * The rendering type to render this entry in
+         */
+        private final RenderType renderType;
+
+        /**
+         * Initialization Event for this Control, assigning defined arguments
+         *
+         * @param name The name to assign to this Entry
+         */
+        public StringEntry(String name) {
+            this(name, RenderType.None);
+        }
+
+        /**
+         * Initialization Event for this Control, assigning defined arguments
+         *
+         * @param name       The name to assign to this Entry
+         * @param renderType The Render Type to assign to this Entry
+         */
+        public StringEntry(String name, RenderType renderType) {
+            this.displayName = name;
+            this.renderType = renderType;
+        }
+
+        /**
+         * Renders this Entry to the List
+         *
+         * @param matrices    The Matrix Stack, used for Rendering
+         * @param index       The Index of the Entry within the List
+         * @param yPos        The Y Coordinate to render at
+         * @param xPos        The X Coordinate to render at
+         * @param entryWidth  The specified Entry's Width
+         * @param entryHeight The specified Entry's Height
+         * @param mouseX      The Event Mouse X Coordinate
+         * @param mouseY      The Event Mouse Y Coordinate
+         * @param hovered     Whether the specified entry is currently hovered over
+         * @param tickDelta   The Rendering Tick Rate
+         */
+        @Override
+        public void render(MatrixStack matrices, int index, int yPos, int xPos, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+            int xOffset = xPos;
+            if (!CraftPresence.CONFIG.stripExtraGuiElements &&
+                    (renderType == RenderType.DiscordAsset || (renderType == RenderType.ServerData && CraftPresence.SERVER.enabled) || (renderType == RenderType.EntityData && CraftPresence.ENTITIES.enabled) || (renderType == RenderType.ItemData && CraftPresence.TILE_ENTITIES.enabled))) {
+                Identifier texture = new Identifier("");
+                String assetUrl;
+
+                if (renderType == RenderType.ServerData) {
+                    final ServerInfo data = CraftPresence.SERVER.getDataFromName(displayName);
+
+                    if (data != null) {
+                        assetUrl = StringUtils.UNKNOWN_BASE64_ID + "," + data.getIcon();
+                        texture = ImageUtils.getTextureFromUrl(displayName, new Pair<>(ImageUtils.InputType.ByteStream, assetUrl));
+                    }
+                } else if (renderType == RenderType.DiscordAsset) {
+                    assetUrl = DiscordAssetUtils.getAssetUrl(CraftPresence.CONFIG.clientId, displayName, true);
+                    texture = ImageUtils.getTextureFromUrl(displayName, assetUrl);
+                } else if (renderType == RenderType.EntityData) {
+                    if (StringUtils.isValidUuid(displayName)) {
+                        // If the entity is classified as a Uuid, assume it is a player's and get their altFace texture
+                        displayName = displayName.replaceAll("-", "");
+                        texture = ImageUtils.getTextureFromUrl(displayName, "https://crafatar.com/avatars/" + displayName);
+                    }
+                } else if (renderType == RenderType.ItemData) {
+                    texture = CraftPresence.TILE_ENTITIES.TILE_ENTITY_RESOURCES.getOrDefault(displayName, texture);
+                }
+                if (!ImageUtils.isTextureNull(texture)) {
+                    CraftPresence.GUIS.drawTextureRect(0.0D, xOffset, yPos + 4.5, 32, 32, 0, texture);
+                }
+                // Note: 35 Added to xOffset to accommodate for Image Size
+                xOffset += 35;
+            }
+            getFontRenderer().drawWithShadow(matrices, displayName, xOffset, yPos + ((entryHeight / 2f) - (getFontRenderer().fontHeight / 2f)), 0xFFFFFF);
+        }
+
+        /**
+         * Event to trigger upon the mouse being clicked
+         *
+         * @param mouseX The Event Mouse X Coordinate
+         * @param mouseY The Event Mouse Y Coordinate
+         * @param button The Event Mouse Button Clicked
+         * @return The Event Result
+         */
+        @Override
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            if (button == 0) {
+                this.onPressed();
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        /**
+         * The Event to occur when this Entry is pressed
+         */
+        private void onPressed() {
+            ScrollableListControl.this.setSelected(this);
         }
     }
 
@@ -211,7 +262,7 @@ public class ScrollableListControl extends ListWidget {
      * @return The Current Font Renderer for this Control
      */
     public TextRenderer getFontRenderer() {
-        return minecraft.textRenderer != null ? minecraft.textRenderer : GuiUtils.getDefaultFontRenderer();
+        return client.textRenderer != null ? client.textRenderer : GuiUtils.getDefaultFontRenderer();
     }
 
     /**

@@ -1055,7 +1055,7 @@ public class StringUtils {
             final List<String> lines = splitTextByNewLine(message);
             if (lines != null && !lines.isEmpty()) {
                 for (String line : lines) {
-                    player.sendMessage(new LiteralText(line));
+                    player.sendMessage(new LiteralText(line), false);
                 }
             }
         }

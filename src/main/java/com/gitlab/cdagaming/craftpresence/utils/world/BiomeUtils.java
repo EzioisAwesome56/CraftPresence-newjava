@@ -30,6 +30,8 @@ import com.gitlab.cdagaming.craftpresence.impl.Pair;
 import com.gitlab.cdagaming.craftpresence.utils.FileUtils;
 import com.gitlab.cdagaming.craftpresence.utils.StringUtils;
 import com.google.common.collect.Lists;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 
@@ -111,7 +113,8 @@ public class BiomeUtils {
      */
     private void updateBiomeData() {
         final Biome newBiome = CraftPresence.player.world.getBiome(CraftPresence.player.getBlockPos());
-        final String newBiomeName = newBiome.getName().asFormattedString();
+        final Identifier newIdentifier = CraftPresence.player.world.getRegistryManager().get(Registry.BIOME_KEY).getId(newBiome);
+        final String newBiomeName = newIdentifier != null ? StringUtils.formatIdentifier(newIdentifier.toString(), false, !CraftPresence.CONFIG.formatWords) : "Plains";
 
         if (!newBiomeName.equals(CURRENT_BIOME_NAME)) {
             CURRENT_BIOME_NAME = newBiomeName;
@@ -160,7 +163,7 @@ public class BiomeUtils {
      */
     private List<Biome> getBiomeTypes() {
         List<Biome> biomeTypes = Lists.newArrayList();
-        List<Biome> defaultBiomeTypes = Lists.newArrayList(Registry.BIOME.iterator());
+        List<Biome> defaultBiomeTypes = Lists.newArrayList(BuiltinRegistries.BIOME.iterator());
 
         if (!defaultBiomeTypes.isEmpty()) {
             for (Biome biome : defaultBiomeTypes) {
@@ -197,8 +200,8 @@ public class BiomeUtils {
     public void getBiomes() {
         for (Biome biome : getBiomeTypes()) {
             if (biome != null) {
-                if (!BIOME_NAMES.contains(biome.getName().asFormattedString())) {
-                    BIOME_NAMES.add(biome.getName().asFormattedString());
+                if (!BIOME_NAMES.contains(StringUtils.formatIdentifier(biome.toString(), false, !CraftPresence.CONFIG.formatWords))) {
+                    BIOME_NAMES.add(StringUtils.formatIdentifier(biome.toString(), false, !CraftPresence.CONFIG.formatWords));
                 }
                 if (!BIOME_TYPES.contains(biome)) {
                     BIOME_TYPES.add(biome);

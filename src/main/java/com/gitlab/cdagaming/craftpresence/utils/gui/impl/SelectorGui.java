@@ -112,7 +112,7 @@ public class SelectorGui extends ExtendedScreen {
 
             scrollList = addList(
                     new ScrollableListControl(
-                            minecraft,
+                            client,
                             width, height,
                             32, height - 45, renderType != RenderType.None ? 45 : 18,
                             itemList, originalValue,

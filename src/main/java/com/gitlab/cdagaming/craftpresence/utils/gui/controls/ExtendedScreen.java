@@ -34,6 +34,7 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import org.lwjgl.glfw.GLFW;
 
@@ -65,6 +66,10 @@ public class ExtendedScreen extends Screen {
      * Variable Needed to ensure all buttons are initialized before rendering to prevent an NPE
      */
     private boolean initialized = false;
+    /**
+     * Current Stored MatrixStack for this Instance
+     */
+    private MatrixStack currentMatrix = new MatrixStack();
 
     /**
      * The Last Ticked Mouse X Coordinate
@@ -82,7 +87,7 @@ public class ExtendedScreen extends Screen {
      */
     public ExtendedScreen(Screen parentScreen) {
         super(new LiteralText(""));
-        minecraft = CraftPresence.instance;
+        client = CraftPresence.instance;
         currentScreen = this;
         this.parentScreen = parentScreen;
     }
@@ -99,7 +104,7 @@ public class ExtendedScreen extends Screen {
         extendedControls.clear();
         extendedLists.clear();
 
-        minecraft.keyboard.enableRepeatEvents(true);
+        client.keyboard.setRepeatEvents(true);
         initializeUi();
         super.init();
         initialized = true;
@@ -202,33 +207,36 @@ public class ExtendedScreen extends Screen {
     /**
      * Renders this Screen, including controls and post-Hover Events
      *
+     * @param matrixStack  The Matrix Stack, used for Rendering
      * @param mouseX       The Event Mouse X Coordinate
      * @param mouseY       The Event Mouse Y Coordinate
      * @param partialTicks The Rendering Tick Rate
      */
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        currentMatrix = matrixStack;
+
         // Ensures initialization events have run first, preventing an NPE
         if (initialized) {
             renderCriticalData();
             preRender();
 
             for (ScrollableListControl listControl : extendedLists) {
-                listControl.render(mouseX, mouseY, partialTicks);
+                listControl.render(matrixStack, mouseX, mouseY, partialTicks);
             }
 
             for (Element extendedControl : extendedControls) {
                 if (extendedControl instanceof ExtendedButtonControl) {
                     final ExtendedButtonControl button = (ExtendedButtonControl) extendedControl;
-                    button.render(mouseX, mouseY, partialTicks);
+                    button.render(matrixStack, mouseX, mouseY, partialTicks);
                 }
                 if (extendedControl instanceof ExtendedTextControl) {
                     final ExtendedTextControl textField = (ExtendedTextControl) extendedControl;
-                    textField.render(mouseX, mouseY, partialTicks);
+                    textField.render(matrixStack, mouseX, mouseY, partialTicks);
                 }
             }
 
-            super.render(mouseX, mouseY, partialTicks);
+            super.render(matrixStack, mouseX, mouseY, partialTicks);
 
             lastMouseX = mouseX;
             lastMouseY = mouseY;
@@ -439,12 +447,13 @@ public class ExtendedScreen extends Screen {
     public void onClose() {
         initialized = false;
         CraftPresence.GUIS.resetIndex();
-        minecraft.keyboard.enableRepeatEvents(false);
+        client.keyboard.setRepeatEvents(false);
     }
 
     /**
      * Renders a String in the Screen, in the style of a notice
      *
+     * @param matrixStack The Matrix Stack, used for Rendering
      * @param notice The List of Strings to render
      */
     public void renderNotice(final List<String> notice) {
@@ -454,6 +463,7 @@ public class ExtendedScreen extends Screen {
     /**
      * Renders a String in the Screen, in the style of a notice
      *
+     * @param matrixStack The Matrix Stack, used for Rendering
      * @param notice      The List of Strings to render
      * @param widthScale  The Scale/Value away from the center X to render at
      * @param heightScale The Scale/Value away from the center Y to render at
@@ -465,6 +475,7 @@ public class ExtendedScreen extends Screen {
     /**
      * Renders a String in the Screen, in the style of a notice
      *
+     * @param matrixStack The Matrix Stack, used for Rendering
      * @param notice       The List of Strings to render
      * @param widthScale   The Scale/Value away from the center X to render at
      * @param heightScale  The Scale/Value away from the center Y to render at
@@ -489,7 +500,7 @@ public class ExtendedScreen extends Screen {
      * @param color The color to render the text in
      */
     public void renderString(String text, float xPos, float yPos, int color) {
-        getFontRenderer().drawWithShadow(text, xPos, yPos, color);
+        getFontRenderer().drawWithShadow(currentMatrix, text, xPos, yPos, color);
     }
 
     /**
@@ -526,7 +537,7 @@ public class ExtendedScreen extends Screen {
      * @return The Current Font Renderer for this Screen
      */
     public TextRenderer getFontRenderer() {
-        return minecraft.textRenderer != null ? minecraft.textRenderer : GuiUtils.getDefaultFontRenderer();
+        return client.textRenderer != null ? client.textRenderer : GuiUtils.getDefaultFontRenderer();
     }
 
     /**

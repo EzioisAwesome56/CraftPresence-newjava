@@ -32,6 +32,9 @@ import com.gitlab.cdagaming.craftpresence.utils.gui.GuiUtils;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.util.Identifier;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 
 import java.io.File;
 
@@ -71,7 +74,7 @@ public class ExtendedButtonControl extends ButtonWidget {
      * @param optionalArgs The optional Arguments, if any, to associate with this control
      */
     public ExtendedButtonControl(int buttonId, int x, int y, int widthIn, int heightIn, String buttonText, String... optionalArgs) {
-        super(x, y, widthIn, heightIn, buttonText, (button) -> {});
+        super(x, y, widthIn, heightIn, new LiteralText(buttonText), (button) -> {});
 
         this.optionalArgs = optionalArgs;
     }
@@ -122,7 +125,7 @@ public class ExtendedButtonControl extends ButtonWidget {
      * @param optionalArgs The optional Arguments, if any, to associate with this control
      */
     public ExtendedButtonControl(int x, int y, int widthIn, int heightIn, String buttonText, String... optionalArgs) {
-        super(x, y, widthIn, heightIn, buttonText, (button) -> {});
+        super(x, y, widthIn, heightIn, new LiteralText(buttonText), (button) -> {});
         this.optionalArgs = optionalArgs;
     }
 
@@ -183,16 +186,16 @@ public class ExtendedButtonControl extends ButtonWidget {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         if (visible) {
-            isHovered = CraftPresence.GUIS.isMouseOver(mouseX, mouseY, this);
-            final int hoverState = getYImage(isHovered);
+            hovered = CraftPresence.GUIS.isMouseOver(mouseX, mouseY, this);
+            final int hoverState = getYImage(hovered);
 
             String backgroundCode = CraftPresence.CONFIG.buttonBackgroundColor;
             Identifier texLocation;
 
             if (StringUtils.isValidColorCode(backgroundCode)) {
-                CraftPresence.GUIS.drawGradientRect(getBlitOffset(), getControlPosX(), getControlPosY(), getControlWidth(), getControlHeight(), backgroundCode, backgroundCode);
+                CraftPresence.GUIS.drawGradientRect(getZOffset(), getControlPosX(), getControlPosY(), getControlWidth(), getControlHeight(), backgroundCode, backgroundCode);
             } else {
                 final boolean usingExternalTexture = ImageUtils.isExternalImage(backgroundCode);
 
@@ -214,21 +217,21 @@ public class ExtendedButtonControl extends ButtonWidget {
                     texLocation = ImageUtils.getTextureFromUrl(textureName, backgroundCode.toLowerCase().startsWith("file://") ? new File(formattedConvertedName) : formattedConvertedName);
                 }
 
-                CraftPresence.GUIS.renderButton(getControlPosX(), getControlPosY(), getControlWidth(), getControlHeight(), hoverState, getBlitOffset(), texLocation);
+                CraftPresence.GUIS.renderButton(getControlPosX(), getControlPosY(), getControlWidth(), getControlHeight(), hoverState, getZOffset(), texLocation);
             }
 
-            renderBg(CraftPresence.instance, mouseX, mouseY);
+            renderBg(matrixStack, CraftPresence.instance, mouseX, mouseY);
             final int color;
 
             if (!active) {
                 color = 10526880;
-            } else if (isHovered) {
+            } else if (hovered) {
                 color = 16777120;
             } else {
                 color = 14737632;
             }
 
-            drawCenteredString(getFontRenderer(), getControlMessage(), getControlPosX() + getControlWidth() / 2, getControlPosY() + (getControlHeight() - 8) / 2, color);
+            drawCenteredString(matrixStack, getFontRenderer(), getControlMessage(), getControlPosX() + getControlWidth() / 2, getControlPosY() + (getControlHeight() - 8) / 2, color);
         }
     }
 
@@ -353,12 +356,30 @@ public class ExtendedButtonControl extends ButtonWidget {
     }
 
     /**
+     * Gets the control's current raw display message
+     *
+     * @return The control's current raw display message
+     */
+    public Text getControlRawMessage() {
+        return this.getMessage();
+    }
+
+    /**
      * Gets the control's current display message
      *
      * @return The control's current display message
      */
     public String getControlMessage() {
-        return this.getMessage();
+        return getControlRawMessage().getString();
+    }
+
+    /**
+     * Sets the control's display message to the specified value
+     *
+     * @param newMessage The new display message for this control
+     */
+    public void setControlRawMessage(final Text newMessage) {
+        this.setMessage(newMessage);
     }
 
     /**
@@ -367,7 +388,7 @@ public class ExtendedButtonControl extends ButtonWidget {
      * @param newMessage The new display message for this control
      */
     public void setControlMessage(final String newMessage) {
-        this.setMessage(newMessage);
+        setControlRawMessage(new LiteralText(newMessage));
     }
 
     /**

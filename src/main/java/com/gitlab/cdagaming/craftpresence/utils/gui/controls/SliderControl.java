@@ -28,6 +28,8 @@ import com.gitlab.cdagaming.craftpresence.CraftPresence;
 import com.gitlab.cdagaming.craftpresence.impl.Pair;
 import com.gitlab.cdagaming.craftpresence.impl.Tuple;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.LiteralText;
 
 /**
  * Gui Widget for a Movable Slider between a beginning and maximum value
@@ -89,7 +91,7 @@ public class SliderControl extends ExtendedButtonControl {
         this.minValue = minValue;
         this.maxValue = maxValue;
         this.valueStep = valueStep;
-        this.setMessage(displayString + ": " + denormalizedSlideValue);
+        this.setMessage(new LiteralText(displayString + ": " + denormalizedSlideValue));
         this.windowTitle = displayString;
     }
 
@@ -212,7 +214,7 @@ public class SliderControl extends ExtendedButtonControl {
      * Equivalent of MouseListener.mouseDragged(MouseEvent e).
      */
     @Override
-    protected void renderBg(MinecraftClient mc, int mouseX, int mouseY) {
+    protected void renderBg(MatrixStack matrixStack, MinecraftClient mc, int mouseX, int mouseY) {
         if (visible) {
             if (dragging) {
                 sliderValue = (float) (mouseX - (getControlPosX() + 4)) / (float) (getControlWidth() - 8);
@@ -223,8 +225,8 @@ public class SliderControl extends ExtendedButtonControl {
             }
 
             onSlide();
-            final int hoverValue = (isHovered ? 2 : 1) * 20;
-            CraftPresence.GUIS.renderSlider(getControlPosX() + (int) (sliderValue * (float) (getControlWidth() - 8)), getControlPosY(), 0, 46 + hoverValue, 4, 20, getBlitOffset(), WIDGETS_LOCATION);
+            final int hoverValue = (hovered ? 2 : 1) * 20;
+            CraftPresence.GUIS.renderSlider(getControlPosX() + (int) (sliderValue * (float) (getControlWidth() - 8)), getControlPosY(), 0, 46 + hoverValue, 4, 20, getZOffset(), WIDGETS_LOCATION);
         }
     }
 

@@ -39,10 +39,11 @@ import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ExtendedTextControl
 import com.google.common.collect.Lists;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ingame.ContainerScreen;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.Identifier;
 import org.lwjgl.opengl.GL11;
 
@@ -297,7 +298,7 @@ public class GuiUtils {
      */
     public void getScreens() {
         final Class<?>[] searchClasses = new Class[]{
-                Screen.class, ContainerScreen.class
+                Screen.class, ScreenHandlerType.class
         };
 
         for (Class<?> classObj : FileUtils.getClassNamesMatchingSuperType(Arrays.asList(searchClasses), true, "net.minecraft", "com.gitlab.cdagaming.craftpresence")) {
@@ -549,7 +550,7 @@ public class GuiUtils {
 
             for (int lineNumber = 0; lineNumber < textLines.size(); ++lineNumber) {
                 String line = textLines.get(lineNumber);
-                fontRenderer.drawWithShadow(line, tooltipX, tooltipY, -1);
+                fontRenderer.drawWithShadow(new MatrixStack(), line, tooltipX, tooltipY, -1);
 
                 if (lineNumber + 1 == titleLinesCount) {
                     tooltipY += 2;

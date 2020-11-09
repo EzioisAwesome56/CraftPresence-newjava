@@ -27,6 +27,7 @@ package com.gitlab.cdagaming.craftpresence.utils.gui.controls;
 import com.gitlab.cdagaming.craftpresence.CraftPresence;
 import com.gitlab.cdagaming.craftpresence.impl.Pair;
 import com.gitlab.cdagaming.craftpresence.utils.StringUtils;
+import net.minecraft.client.util.math.MatrixStack;
 
 /**
  * Gui Widget for a Clickable Checkbox-Style Button
@@ -137,17 +138,17 @@ public class CheckBoxControl extends ExtendedButtonControl {
      * Draws this button to the screen.
      */
     @Override
-    public void render(int mouseX, int mouseY, float partial) {
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partial) {
         if (visible) {
-            isHovered = CraftPresence.GUIS.isMouseOver(mouseX, mouseY, this);
-            CraftPresence.GUIS.drawContinuousTexturedBox(new Pair<>(getControlPosX(), getControlPosY()), new Pair<>(0, 46), new Pair<>(boxWidth, getControlHeight()), new Pair<>(200, 20), new Pair<>(2, 3), new Pair<>(2, 2), getBlitOffset(), WIDGETS_LOCATION);
-            renderBg(CraftPresence.instance, mouseX, mouseY);
+            hovered = CraftPresence.GUIS.isMouseOver(mouseX, mouseY, this);
+            CraftPresence.GUIS.drawContinuousTexturedBox(new Pair<>(getControlPosX(), getControlPosY()), new Pair<>(0, 46), new Pair<>(boxWidth, getControlHeight()), new Pair<>(200, 20), new Pair<>(2, 3), new Pair<>(2, 2), getZOffset(), WIDGETS_LOCATION);
+            renderBg(matrixStack, CraftPresence.instance, mouseX, mouseY);
             int color = !isControlEnabled() ? 10526880 : 14737632;
 
             if (is_Checked)
-                drawCenteredString(getFontRenderer(), "x", getControlPosX() + boxWidth / 2 + 1, getControlPosY() + 1, 14737632);
+                drawCenteredString(matrixStack, getFontRenderer(), "x", getControlPosX() + boxWidth / 2 + 1, getControlPosY() + 1, 14737632);
 
-            drawString(getFontRenderer(), getControlMessage(), getControlPosX() + boxWidth + 2, getControlPosY() + 2, color);
+            drawStringWithShadow(matrixStack, getFontRenderer(), getControlMessage(), getControlPosX() + boxWidth + 2, getControlPosY() + 2, color);
         }
     }
 
@@ -157,7 +158,7 @@ public class CheckBoxControl extends ExtendedButtonControl {
      */
     @Override
     public void onClick(double mouseX, double mouseY) {
-        if (isControlEnabled() && visible && isHovered) {
+        if (isControlEnabled() && visible && hovered) {
             is_Checked = !is_Checked;
         }
     }

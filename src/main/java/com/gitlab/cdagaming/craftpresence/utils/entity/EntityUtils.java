@@ -199,7 +199,7 @@ public class EntityUtils {
             NEW_CURRENT_TARGET_NAME = StringUtils.stripColors(NEW_CURRENT_PLAYER_TARGET.getGameProfile().getId().toString());
         } else {
             NEW_CURRENT_TARGET_NAME = NEW_CURRENT_TARGET != null ?
-                    StringUtils.stripColors(NEW_CURRENT_TARGET.getDisplayName().asFormattedString()) : "";
+                    StringUtils.stripColors(NEW_CURRENT_TARGET.getDisplayName().getString()) : "";
         }
 
         if (NEW_CURRENT_ATTACKING instanceof PlayerEntity) {
@@ -207,7 +207,7 @@ public class EntityUtils {
             NEW_CURRENT_ATTACKING_NAME = StringUtils.stripColors(NEW_CURRENT_PLAYER_ATTACKING.getGameProfile().getId().toString());
         } else {
             NEW_CURRENT_ATTACKING_NAME = NEW_CURRENT_ATTACKING != null ?
-                    StringUtils.stripColors(NEW_CURRENT_ATTACKING.getDisplayName().asFormattedString()) : "";
+                    StringUtils.stripColors(NEW_CURRENT_ATTACKING.getDisplayName().getString()) : "";
         }
 
         if (NEW_CURRENT_RIDING instanceof PlayerEntity) {
@@ -215,7 +215,7 @@ public class EntityUtils {
             NEW_CURRENT_RIDING_NAME = StringUtils.stripColors(NEW_CURRENT_PLAYER_RIDING.getGameProfile().getId().toString());
         } else {
             NEW_CURRENT_RIDING_NAME = NEW_CURRENT_RIDING != null ?
-                    StringUtils.stripColors(NEW_CURRENT_RIDING.getDisplayName().asFormattedString()) : "";
+                    StringUtils.stripColors(NEW_CURRENT_RIDING.getDisplayName().getString()) : "";
         }
 
         final boolean hasTargetChanged = (NEW_CURRENT_TARGET != null &&
@@ -389,7 +389,7 @@ public class EntityUtils {
         if (!defaultEntityTypes.isEmpty()) {
             for (EntityType<?> entityLocation : defaultEntityTypes) {
                 if (entityLocation != null) {
-                    final String entityName = entityLocation.getName().asFormattedString();
+                    final String entityName = entityLocation.getName().getString();
                     final Class<?> entityClass = entityLocation.getClass();
                     if (!ENTITY_NAMES.contains(entityName)) {
                         ENTITY_NAMES.add(entityName);

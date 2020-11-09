@@ -351,17 +351,17 @@ public class TileEntityUtils {
         final ItemStack NEW_CURRENT_BOOTS = CraftPresence.player.inventory.armor.get(0);
 
         final String NEW_CURRENT_MAIN_HAND_ITEM_NAME = !isEmpty(NEW_CURRENT_MAIN_HAND_ITEM) ?
-                StringUtils.stripColors(NEW_CURRENT_MAIN_HAND_ITEM.getName().asFormattedString()) : "";
+                StringUtils.stripColors(NEW_CURRENT_MAIN_HAND_ITEM.getName().getString()) : "";
         final String NEW_CURRENT_OFFHAND_ITEM_NAME = !isEmpty(NEW_CURRENT_OFFHAND_ITEM) ?
-                StringUtils.stripColors(NEW_CURRENT_OFFHAND_ITEM.getName().asFormattedString()) : "";
+                StringUtils.stripColors(NEW_CURRENT_OFFHAND_ITEM.getName().getString()) : "";
         final String NEW_CURRENT_HELMET_NAME = !isEmpty(NEW_CURRENT_HELMET) ?
-                StringUtils.stripColors(NEW_CURRENT_HELMET.getName().asFormattedString()) : "";
+                StringUtils.stripColors(NEW_CURRENT_HELMET.getName().getString()) : "";
         final String NEW_CURRENT_CHEST_NAME = !isEmpty(NEW_CURRENT_CHEST) ?
-                StringUtils.stripColors(NEW_CURRENT_CHEST.getName().asFormattedString()) : "";
+                StringUtils.stripColors(NEW_CURRENT_CHEST.getName().getString()) : "";
         final String NEW_CURRENT_LEGS_NAME = !isEmpty(NEW_CURRENT_LEGS) ?
-                StringUtils.stripColors(NEW_CURRENT_LEGS.getName().asFormattedString()) : "";
+                StringUtils.stripColors(NEW_CURRENT_LEGS.getName().getString()) : "";
         final String NEW_CURRENT_BOOTS_NAME = !isEmpty(NEW_CURRENT_BOOTS) ?
-                StringUtils.stripColors(NEW_CURRENT_BOOTS.getName().asFormattedString()) : "";
+                StringUtils.stripColors(NEW_CURRENT_BOOTS.getName().getString()) : "";
 
         final boolean hasMainHandChanged = (!isEmpty(NEW_CURRENT_MAIN_HAND_ITEM) &&
                 !NEW_CURRENT_MAIN_HAND_ITEM.equals(CURRENT_MAIN_HAND_ITEM) || !NEW_CURRENT_MAIN_HAND_ITEM_NAME.equals(CURRENT_MAIN_HAND_ITEM_NAME)) ||
@@ -610,16 +610,16 @@ public class TileEntityUtils {
 
         for (Block block : defaultBlocks) {
             if (!isEmpty(block)) {
-                if (!BLOCK_NAMES.contains(block.getName().asFormattedString())) {
-                    BLOCK_NAMES.add(block.getName().asFormattedString());
+                if (!BLOCK_NAMES.contains(block.getName().getString())) {
+                    BLOCK_NAMES.add(block.getName().getString());
                 }
                 if (!BLOCK_CLASSES.contains(block.getClass().getName())) {
                     BLOCK_CLASSES.add(block.getClass().getName());
                 }
 
-                if (!TILE_ENTITY_RESOURCES.containsKey(block.getName().asFormattedString())) {
+                if (!TILE_ENTITY_RESOURCES.containsKey(block.getName().getString())) {
                     final Identifier initialData = Registry.BLOCK.getId(block);
-                    TILE_ENTITY_RESOURCES.put(block.getName().asFormattedString(),
+                    TILE_ENTITY_RESOURCES.put(block.getName().getString(),
                             new Identifier(initialData.getNamespace(),
                                     (ModUtils.MCProtocolID > 340 ? "textures/block/" : "textures/blocks/") + initialData.getPath() + ".png"));
                 }
@@ -628,16 +628,16 @@ public class TileEntityUtils {
 
         for (Item item : defaultItems) {
             if (!isEmpty(item)) {
-                if (!ITEM_NAMES.contains(item.getName(getDefaultInstance(item)).asFormattedString())) {
-                    ITEM_NAMES.add(item.getName(getDefaultInstance(item)).asFormattedString());
+                if (!ITEM_NAMES.contains(item.getName(getDefaultInstance(item)).getString())) {
+                    ITEM_NAMES.add(item.getName(getDefaultInstance(item)).getString());
                 }
                 if (!ITEM_CLASSES.contains(item.getClass().getName())) {
                     ITEM_CLASSES.add(item.getClass().getName());
                 }
 
-                if (!TILE_ENTITY_RESOURCES.containsKey(item.getName(getDefaultInstance(item)).asFormattedString())) {
+                if (!TILE_ENTITY_RESOURCES.containsKey(item.getName(getDefaultInstance(item)).getString())) {
                     final Identifier initialData = Registry.ITEM.getId(item);
-                    TILE_ENTITY_RESOURCES.put(item.getName(getDefaultInstance(item)).asFormattedString(),
+                    TILE_ENTITY_RESOURCES.put(item.getName(getDefaultInstance(item)).getString(),
                             new Identifier(initialData.getNamespace(),
                                     (ModUtils.MCProtocolID > 340 ? "textures/item/" : "textures/items/") + initialData.getPath() + ".png"));
                 }

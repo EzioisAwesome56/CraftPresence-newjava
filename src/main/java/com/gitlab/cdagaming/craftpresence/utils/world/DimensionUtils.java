@@ -25,17 +25,17 @@
 package com.gitlab.cdagaming.craftpresence.utils.world;
 
 import com.gitlab.cdagaming.craftpresence.CraftPresence;
-import com.gitlab.cdagaming.craftpresence.ModUtils;
 import com.gitlab.cdagaming.craftpresence.impl.Pair;
-import com.gitlab.cdagaming.craftpresence.utils.FileUtils;
 import com.gitlab.cdagaming.craftpresence.utils.StringUtils;
 import com.google.common.collect.Lists;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.dimension.DimensionType;
 
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 /**
  * Dimension Utilities used to Parse Dimension Data and handle related RPC Events
@@ -46,7 +46,7 @@ public class DimensionUtils {
     /**
      * A List of the detected Dimension Type's
      */
-    private final List<DimensionType> DIMENSION_TYPES = Lists.newArrayList();
+    private final List<Identifier> DIMENSION_TYPES = Lists.newArrayList();
     /**
      * Whether this module is active and currently in use
      */
@@ -116,12 +116,11 @@ public class DimensionUtils {
      * Synchronizes Data related to this module, if needed
      */
     private void updateDimensionData() {
-        final Dimension newProvider = CraftPresence.player.world.dimension;
-        final DimensionType newDimensionType = newProvider.getType();
-        final String newDimensionName = StringUtils.formatIdentifier(newDimensionType.toString(), false, !CraftPresence.CONFIG.formatWords);
+        final Identifier newDimensionType = CraftPresence.player.world.getRegistryKey().getValue();
+        final String newDimensionName = StringUtils.formatIdentifier(CraftPresence.player.world.getRegistryKey().getValue().toString(), false, !CraftPresence.CONFIG.formatWords);
 
-        final String newDimension_primaryIdentifier = StringUtils.formatIdentifier(newDimensionType.toString(), true, !CraftPresence.CONFIG.formatWords);
-        final String newDimension_alternativeIdentifier = StringUtils.formatIdentifier(newProvider.getClass().getSimpleName(), true, !CraftPresence.CONFIG.formatWords);
+        final String newDimension_primaryIdentifier = StringUtils.formatIdentifier(CraftPresence.player.world.getRegistryKey().getValue().toString(), true, !CraftPresence.CONFIG.formatWords);
+        final String newDimension_alternativeIdentifier = StringUtils.formatIdentifier(newDimensionType.getClass().getSimpleName(), true, !CraftPresence.CONFIG.formatWords);
         final String newDimension_Identifier = !StringUtils.isNullOrEmpty(newDimension_primaryIdentifier) ? newDimension_primaryIdentifier : newDimension_alternativeIdentifier;
 
         if (!newDimensionName.equals(CURRENT_DIMENSION_NAME) || !newDimension_Identifier.equals(CURRENT_DIMENSION_IDENTIFIER)) {
@@ -170,43 +169,17 @@ public class DimensionUtils {
      *
      * @return The detected Dimension Types found
      */
-    private List<DimensionType> getDimensionTypes() {
-        List<DimensionType> dimensionTypes = Lists.newArrayList();
-        List<DimensionType> defaultDimensionTypes = Lists.newArrayList(Registry.DIMENSION_TYPE.iterator());
-        Map<?, ?> reflectedDimensionTypes = (Map<?, ?>) StringUtils.lookupObject(DimensionType.class, null, "dimensionTypes");
+    private List<Identifier> getDimensionTypes() {
+        List<Identifier> dimensionTypes = Lists.newArrayList();
+        Optional<MutableRegistry<DimensionType>> dimensionRegistry = DynamicRegistryManager.create().getOptional(Registry.DIMENSION_TYPE_KEY);
 
-        if (!defaultDimensionTypes.isEmpty()) {
-            for (DimensionType type : defaultDimensionTypes) {
-                if (type != null) {
-                    dimensionTypes.add(type);
-                }
-            }
-        }
+        if (dimensionRegistry.isPresent()) {
+            List<Identifier> defaultDimensionTypes = Lists.newArrayList(dimensionRegistry.get().getIds());
 
-        if (dimensionTypes.isEmpty()) {
-            // Fallback 1: Use Reflected Dimension Types
-            if (reflectedDimensionTypes != null) {
-                for (Object objectType : reflectedDimensionTypes.values()) {
-                    DimensionType type = (objectType instanceof DimensionType) ? (DimensionType) objectType : null;
-
-                    if (type != null && !dimensionTypes.contains(type)) {
+            if (!defaultDimensionTypes.isEmpty()) {
+                for (Identifier type : defaultDimensionTypes) {
+                    if (type != null) {
                         dimensionTypes.add(type);
-                    }
-                }
-            } else {
-                // Fallback 2: Use Manual Class Lookup
-                for (Class<?> classObj : FileUtils.getClassNamesMatchingSuperType(Dimension.class, true, "net.minecraft", "com.gitlab.cdagaming.craftpresence")) {
-                    if (classObj != null) {
-                        try {
-                            Dimension providerObj = (Dimension) classObj.newInstance();
-                            if (!dimensionTypes.contains(providerObj.getType())) {
-                                dimensionTypes.add(providerObj.getType());
-                            }
-                        } catch (Exception | Error ex) {
-                            if (ModUtils.IS_VERBOSE) {
-                                ex.printStackTrace();
-                            }
-                        }
                     }
                 }
             }
@@ -219,7 +192,7 @@ public class DimensionUtils {
      * Updates and Initializes Module Data, based on found Information
      */
     public void getDimensions() {
-        for (DimensionType TYPE : getDimensionTypes()) {
+        for (Identifier TYPE : getDimensionTypes()) {
             if (TYPE != null) {
                 if (!DIMENSION_NAMES.contains(StringUtils.formatIdentifier(TYPE.toString(), true, !CraftPresence.CONFIG.formatWords))) {
                     DIMENSION_NAMES.add(StringUtils.formatIdentifier(TYPE.toString(), true, !CraftPresence.CONFIG.formatWords));
