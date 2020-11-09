@@ -29,9 +29,9 @@ import com.gitlab.cdagaming.craftpresence.utils.StringUtils;
 import com.gitlab.cdagaming.craftpresence.utils.TranslationUtils;
 import com.gitlab.cdagaming.craftpresence.utils.updater.ModUpdaterUtils;
 import com.google.common.collect.Lists;
+import net.minecraft.SharedConstants;
 import net.minecraft.client.ClientBrandRetriever;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.SharedConstants;
+import net.minecraft.client.MinecraftClient;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -83,12 +83,12 @@ public class ModUtils {
     /**
      * The Detected Minecraft Version
      */
-    public static final String MCVersion = SharedConstants.getVersion().getName();
+    public static final String MCVersion = SharedConstants.getGameVersion().getName();
 
     /**
      * The Detected Minecraft Protocol Version
      */
-    public static final int MCProtocolID = SharedConstants.getVersion().getProtocolVersion();
+    public static final int MCProtocolID = SharedConstants.getGameVersion().getProtocolVersion();
 
     /**
      * The Detected Brand Information within Minecraft
@@ -108,7 +108,7 @@ public class ModUtils {
     /**
      * The Detected Username within Minecraft
      */
-    public static final String USERNAME = Minecraft.getInstance().getSession().getUsername();
+    public static final String USERNAME = MinecraftClient.getInstance().getSession().getUsername();
 
     /**
      * The URL to receive Update Information from

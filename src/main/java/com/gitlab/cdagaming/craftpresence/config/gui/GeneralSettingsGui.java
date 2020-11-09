@@ -62,7 +62,7 @@ public class GeneralSettingsGui extends ExtendedScreen {
                 )
         );
         clientId.setText(CraftPresence.CONFIG.clientId);
-        clientId.setMaxStringLength(18);
+        clientId.setMaxLength(18);
 
         final int buttonCalc1 = (width / 2) - 183;
         final int buttonCalc2 = (width / 2) + 3;

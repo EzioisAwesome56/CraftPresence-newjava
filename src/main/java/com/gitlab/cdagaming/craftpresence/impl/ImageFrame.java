@@ -24,7 +24,7 @@
 
 package com.gitlab.cdagaming.craftpresence.impl;
 
-import net.minecraft.client.renderer.texture.NativeImage;
+import net.minecraft.client.texture.NativeImage;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -408,7 +408,7 @@ public class ImageFrame {
                         ((blue & 0xFF) << 16) |
                         ((green & 0xFF) << 8) |
                         ((red & 0xFF));
-                newImage.setPixelRGBA(x, y, rgb);
+                newImage.setPixelRgba(x, y, rgb);
             }
         }
 

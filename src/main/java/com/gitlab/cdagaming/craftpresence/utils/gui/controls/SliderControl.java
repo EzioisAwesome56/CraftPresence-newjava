@@ -27,9 +27,7 @@ package com.gitlab.cdagaming.craftpresence.utils.gui.controls;
 import com.gitlab.cdagaming.craftpresence.CraftPresence;
 import com.gitlab.cdagaming.craftpresence.impl.Pair;
 import com.gitlab.cdagaming.craftpresence.impl.Tuple;
-import net.minecraft.client.Minecraft;
-
-import javax.annotation.Nonnull;
+import net.minecraft.client.MinecraftClient;
 
 /**
  * Gui Widget for a Movable Slider between a beginning and maximum value
@@ -214,7 +212,7 @@ public class SliderControl extends ExtendedButtonControl {
      * Equivalent of MouseListener.mouseDragged(MouseEvent e).
      */
     @Override
-    protected void renderBg(@Nonnull Minecraft mc, int mouseX, int mouseY) {
+    protected void renderBg(MinecraftClient mc, int mouseX, int mouseY) {
         if (visible) {
             if (dragging) {
                 sliderValue = (float) (mouseX - (getControlPosX() + 4)) / (float) (getControlWidth() - 8);

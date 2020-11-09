@@ -30,7 +30,7 @@ import com.gitlab.cdagaming.craftpresence.impl.Tuple;
 import com.google.common.collect.Lists;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.text.LiteralText;
 
 import java.awt.*;
 import java.lang.reflect.Field;
@@ -1055,7 +1055,7 @@ public class StringUtils {
             final List<String> lines = splitTextByNewLine(message);
             if (lines != null && !lines.isEmpty()) {
                 for (String line : lines) {
-                    player.sendMessage(new StringTextComponent(line));
+                    player.sendMessage(new LiteralText(line));
                 }
             }
         }

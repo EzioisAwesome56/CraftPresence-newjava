@@ -28,16 +28,15 @@ import com.gitlab.cdagaming.craftpresence.CraftPresence;
 import com.gitlab.cdagaming.craftpresence.utils.StringUtils;
 import com.gitlab.cdagaming.craftpresence.utils.gui.GuiUtils;
 import com.google.common.collect.Lists;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.text.LiteralText;
 import org.lwjgl.glfw.GLFW;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
@@ -57,7 +56,7 @@ public class ExtendedScreen extends Screen {
     /**
      * Similar to buttonList, a list of compatible controls in this Screen
      */
-    private final List<AbstractGui> extendedControls = Lists.newArrayList();
+    private final List<Element> extendedControls = Lists.newArrayList();
     /**
      * Similar to buttonList, a list of compatible ScrollLists in this Screen
      */
@@ -82,7 +81,7 @@ public class ExtendedScreen extends Screen {
      * @param parentScreen The Parent Screen for this Instance
      */
     public ExtendedScreen(Screen parentScreen) {
-        super(new StringTextComponent(""));
+        super(new LiteralText(""));
         minecraft = CraftPresence.instance;
         currentScreen = this;
         this.parentScreen = parentScreen;
@@ -100,7 +99,7 @@ public class ExtendedScreen extends Screen {
         extendedControls.clear();
         extendedLists.clear();
 
-        minecraft.keyboardListener.enableRepeatEvents(true);
+        minecraft.keyboard.enableRepeatEvents(true);
         initializeUi();
         super.init();
         initialized = true;
@@ -123,7 +122,7 @@ public class ExtendedScreen extends Screen {
      * @param h    The New Screen Height
      */
     @Override
-    public void resize(@Nonnull Minecraft mcIn, int w, int h) {
+    public void resize(MinecraftClient mcIn, int w, int h) {
         initialized = false;
         super.resize(mcIn, w, h);
     }
@@ -135,9 +134,8 @@ public class ExtendedScreen extends Screen {
      * @param <T>      The Button's Class Type
      * @return The added button with attached class type
      */
-    @Nonnull
     @Override
-    protected <T extends Widget> T addButton(@Nonnull T buttonIn) {
+    protected <T extends AbstractButtonWidget> T addButton(T buttonIn) {
         return addControl(buttonIn);
     }
 
@@ -148,10 +146,9 @@ public class ExtendedScreen extends Screen {
      * @param <T>      The Control's Class Type
      * @return The added control with attached class type
      */
-    @Nonnull
-    protected <T extends AbstractGui> T addControl(@Nonnull T buttonIn) {
-        if (buttonIn instanceof Button && !buttons.contains(buttonIn)) {
-            buttons.add((Button) buttonIn);
+    protected <T extends Element> T addControl(T buttonIn) {
+        if (buttonIn instanceof ButtonWidget && !buttons.contains(buttonIn)) {
+            buttons.add((ButtonWidget) buttonIn);
         }
         if (!extendedControls.contains(buttonIn)) {
             extendedControls.add(buttonIn);
@@ -167,8 +164,7 @@ public class ExtendedScreen extends Screen {
      * @param <T>      The Scroll List's Class Type
      * @return The added scroll list with attached class type
      */
-    @Nonnull
-    protected <T extends ScrollableListControl> T addList(@Nonnull T buttonIn) {
+    protected <T extends ScrollableListControl> T addList(T buttonIn) {
         if (!extendedLists.contains(buttonIn)) {
             extendedLists.add(buttonIn);
         }
@@ -221,7 +217,7 @@ public class ExtendedScreen extends Screen {
                 listControl.render(mouseX, mouseY, partialTicks);
             }
 
-            for (AbstractGui extendedControl : extendedControls) {
+            for (Element extendedControl : extendedControls) {
                 if (extendedControl instanceof ExtendedButtonControl) {
                     final ExtendedButtonControl button = (ExtendedButtonControl) extendedControl;
                     button.render(mouseX, mouseY, partialTicks);
@@ -237,7 +233,7 @@ public class ExtendedScreen extends Screen {
             lastMouseX = mouseX;
             lastMouseY = mouseY;
 
-            for (AbstractGui extendedControl : extendedControls) {
+            for (Element extendedControl : extendedControls) {
                 if (extendedControl instanceof ExtendedButtonControl) {
                     final ExtendedButtonControl extendedButton = (ExtendedButtonControl) extendedControl;
                     if (CraftPresence.GUIS.isMouseOver(mouseX, mouseY, extendedButton)) {
@@ -264,7 +260,7 @@ public class ExtendedScreen extends Screen {
             CraftPresence.GUIS.openScreen(parentScreen);
         }
 
-        for (AbstractGui extendedControl : extendedControls) {
+        for (Element extendedControl : extendedControls) {
             if (extendedControl instanceof ExtendedButtonControl) {
                 final ExtendedButtonControl button = (ExtendedButtonControl) extendedControl;
                 button.keyPressed(keyCode, mouseX, mouseY);
@@ -290,7 +286,7 @@ public class ExtendedScreen extends Screen {
             listControl.charTyped(typedChar, keyCode);
         }
 
-        for (AbstractGui extendedControl : extendedControls) {
+        for (Element extendedControl : extendedControls) {
             if (extendedControl instanceof ExtendedButtonControl) {
                 final ExtendedButtonControl button = (ExtendedButtonControl) extendedControl;
                 button.charTyped(typedChar, keyCode);
@@ -317,7 +313,7 @@ public class ExtendedScreen extends Screen {
             listControl.mouseClicked(mouseX, mouseY, mouseButton);
         }
 
-        for (AbstractGui extendedControl : extendedControls) {
+        for (Element extendedControl : extendedControls) {
             if (extendedControl instanceof ExtendedButtonControl) {
                 final ExtendedButtonControl button = (ExtendedButtonControl) extendedControl;
                 button.mouseClicked(mouseX, mouseY, mouseButton);
@@ -344,7 +340,7 @@ public class ExtendedScreen extends Screen {
             listControl.mouseScrolled(mouseX, mouseY, scrollAmount);
         }
 
-        for (AbstractGui extendedControl : extendedControls) {
+        for (Element extendedControl : extendedControls) {
             if (extendedControl instanceof ExtendedButtonControl) {
                 final ExtendedButtonControl button = (ExtendedButtonControl) extendedControl;
                 button.mouseScrolled(mouseX, mouseY, scrollAmount);
@@ -373,7 +369,7 @@ public class ExtendedScreen extends Screen {
             listControl.mouseDragged(mouseX, mouseY, mouseButton, scrollX, scrollY);
         }
 
-        for (AbstractGui extendedControl : extendedControls) {
+        for (Element extendedControl : extendedControls) {
             if (extendedControl instanceof ExtendedButtonControl) {
                 final ExtendedButtonControl button = (ExtendedButtonControl) extendedControl;
                 button.mouseDragged(mouseX, mouseY, mouseButton, scrollX, scrollY);
@@ -400,7 +396,7 @@ public class ExtendedScreen extends Screen {
             listControl.mouseReleased(mouseX, mouseY, mouseButton);
         }
 
-        for (AbstractGui extendedControl : extendedControls) {
+        for (Element extendedControl : extendedControls) {
             if (extendedControl instanceof ExtendedButtonControl) {
                 final ExtendedButtonControl button = (ExtendedButtonControl) extendedControl;
                 button.mouseReleased(mouseX, mouseY, mouseButton);
@@ -418,7 +414,7 @@ public class ExtendedScreen extends Screen {
      */
     @Override
     public void tick() {
-        for (AbstractGui extendedControl : extendedControls) {
+        for (Element extendedControl : extendedControls) {
             if (extendedControl instanceof ExtendedTextControl) {
                 final ExtendedTextControl textField = (ExtendedTextControl) extendedControl;
                 textField.tick();
@@ -443,7 +439,7 @@ public class ExtendedScreen extends Screen {
     public void onClose() {
         initialized = false;
         CraftPresence.GUIS.resetIndex();
-        minecraft.keyboardListener.enableRepeatEvents(false);
+        minecraft.keyboard.enableRepeatEvents(false);
     }
 
     /**
@@ -493,7 +489,7 @@ public class ExtendedScreen extends Screen {
      * @param color The color to render the text in
      */
     public void renderString(String text, float xPos, float yPos, int color) {
-        getFontRenderer().drawStringWithShadow(text, xPos, yPos, color);
+        getFontRenderer().drawWithShadow(text, xPos, yPos, color);
     }
 
     /**
@@ -529,8 +525,8 @@ public class ExtendedScreen extends Screen {
      *
      * @return The Current Font Renderer for this Screen
      */
-    public FontRenderer getFontRenderer() {
-        return minecraft.fontRenderer != null ? minecraft.fontRenderer : GuiUtils.getDefaultFontRenderer();
+    public TextRenderer getFontRenderer() {
+        return minecraft.textRenderer != null ? minecraft.textRenderer : GuiUtils.getDefaultFontRenderer();
     }
 
     /**
@@ -539,6 +535,6 @@ public class ExtendedScreen extends Screen {
      * @return The Current Font Height for this Screen
      */
     public int getFontHeight() {
-        return getFontRenderer().FONT_HEIGHT;
+        return getFontRenderer().fontHeight;
     }
 }

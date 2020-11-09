@@ -59,7 +59,7 @@ public class AdvancedSettingsGui extends ExtendedScreen {
                 )
         );
         splitCharacter.setText(CraftPresence.CONFIG.splitCharacter);
-        splitCharacter.setMaxStringLength(1);
+        splitCharacter.setMaxLength(1);
 
         refreshRate = addControl(
                 new ExtendedTextControl(
@@ -69,7 +69,7 @@ public class AdvancedSettingsGui extends ExtendedScreen {
                 )
         );
         refreshRate.setText(Integer.toString(CraftPresence.CONFIG.refreshRate));
-        refreshRate.setMaxStringLength(3);
+        refreshRate.setMaxLength(3);
 
         final int calc1 = (width / 2) - 160;
         final int calc2 = (width / 2) + 3;

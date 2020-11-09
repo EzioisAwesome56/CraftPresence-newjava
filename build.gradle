@@ -1,23 +1,24 @@
+import net.fabricmc.loom.LoomGradlePlugin
+
 buildscript {
     repositories {
         mavenCentral()
         jcenter()
-        maven { url = "https://files.minecraftforge.net/maven" }
+        maven { url = "https://maven.fabricmc.net/" }
         maven { url = "https://gitlab.com/EMC-Framework/maven/raw/master/" }
         maven { url = "https://plugins.gradle.org/m2/" }
     }
     dependencies {
-        classpath "net.minecraftforge.gradle:ForgeGradle:3.+"
+        classpath "net.fabricmc:fabric-loom:0.5-SNAPSHOT"
         classpath "com.github.CDAGaming:CurseGradle:master-SNAPSHOT"
         classpath "gradle.plugin.net.minecrell:licenser:0.4.1"
     }
 }
 
-apply plugin: "net.minecraftforge.gradle"
+apply plugin: LoomGradlePlugin
 apply plugin: "com.matthewprenger.cursegradle"
 apply plugin: "net.minecrell.licenser"
 
-import net.minecraftforge.gradle.common.task.SignJar
 import org.apache.tools.ant.filters.ReplaceTokens
 
 version = "${versionId}"
@@ -52,55 +53,41 @@ curseforge {
         changelogType = "markdown"
         releaseType = "${versionType}".toLowerCase()
         addGameVersion "${mc_version}"
-        addGameVersion "Forge"
+        addGameVersion "Fabric"
+        relations {
+            requiredDependency 'fabric-api'
+        }
 
-        mainArtifact(jar) {
+        mainArtifact(remapJar) {
             displayName = "${archive_name} v${version} ${versionLabel} (${mc_version})"
+        }
+
+        options {
+            forgeGradleIntegration = false
         }
     }
 }
 
 minecraft {
-    mappings channel: 'snapshot', version: "${mc_mappings}"
+    // N/A
+}
 
-    runs {
-        client {
-            workingDirectory project.file('run')
-
-            // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-
-            // Recommended logging level for the console
-            property 'forge.logging.console.level', 'debug'
-
-            mods {
-                craftpresence {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        server {
-            workingDirectory project.file('run')
-
-            // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-
-            // Recommended logging level for the console
-            property 'forge.logging.console.level', 'debug'
-
-            mods {
-                craftpresence {
-                    source sourceSets.main
-                }
-            }
-        }
-    }
+repositories {
+    jcenter()
+    mavenCentral()
+    maven { url = "https://maven.fabricmc.net/" }
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
+    minecraft "com.mojang:minecraft:${mc_version}"
+    mappings "net.fabricmc:yarn:${mc_mappings}"
     implementation "com.google.code.findbugs:jsr305:3.0.2"
+    modImplementation "net.fabricmc:fabric-loader:0.10.+"
+
+    // CraftPresence itself doesn't use Fabric API at all
+    // this is purely for optional dependency testing and integration with other mods
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
+    modImplementation "io.github.prospector:modmenu:${modmenu_version}"
 }
 
 jar {
@@ -116,9 +103,9 @@ processResources {
     inputs.property "version", project.version
     inputs.property "mcversion", "${mc_version}"
 
-    // replace stuff in mods.toml, nothing else
+    // replace stuff in fabric.mod.json, nothing else
     from(sourceSets.main.resources.srcDirs) {
-        include 'META-INF/mods.toml'
+        include 'fabric.mod.json'
 
         // replace version and mcversion
         expand 'version': project.version, 'mcversion': "${mc_version}"
@@ -126,22 +113,8 @@ processResources {
 
     // copy everything else except the mods.toml
     from(sourceSets.main.resources.srcDirs) {
-        exclude 'META-INF/mods.toml'
+        exclude 'fabric.mod.json'
     }
-}
-
-task signJar(type: SignJar, dependsOn: jar) {
-    onlyIf {
-        System.getenv("key_MAINPASS") != null
-    }
-
-    keyStore = "keystore.jks"
-    alias = System.getenv("key_Alias")
-    storePass = System.getenv("key_MAINPASS")
-    keyPass = System.getenv("keyPass")
-
-    inputFile = jar.archiveFile
-    outputFile = jar.archiveFile
 }
 
 def copyDir = "$compileJava.temporaryDir/replaced"
@@ -168,5 +141,4 @@ compileJava {
     source = processSource.outputs
 }
 
-tasks.build.dependsOn signJar
 tasks.curseforge.dependsOn build

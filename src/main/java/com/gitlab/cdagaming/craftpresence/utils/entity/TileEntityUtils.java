@@ -34,8 +34,8 @@ import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 import java.util.List;
@@ -90,7 +90,7 @@ public class TileEntityUtils {
     /**
      * A List storing a mapping of Tile Entity textures, mapped as entityName:entityTexture
      */
-    public Map<String, ResourceLocation> TILE_ENTITY_RESOURCES = Maps.newHashMap();
+    public Map<String, Identifier> TILE_ENTITY_RESOURCES = Maps.newHashMap();
     /**
      * The Player's Current Main Hand Item's Nbt Tags, if any
      */
@@ -178,32 +178,32 @@ public class TileEntityUtils {
     /**
      * The Player's Current Main Hand Item's Tag, if any
      */
-    private CompoundNBT CURRENT_MAIN_HAND_ITEM_TAG;
+    private CompoundTag CURRENT_MAIN_HAND_ITEM_TAG;
 
     /**
      * The Player's Current Off Hand Item's Tag, if any
      */
-    private CompoundNBT CURRENT_OFFHAND_ITEM_TAG;
+    private CompoundTag CURRENT_OFFHAND_ITEM_TAG;
 
     /**
      * The Player's Currently equipped Helmet's Tag, if any
      */
-    private CompoundNBT CURRENT_HELMET_TAG;
+    private CompoundTag CURRENT_HELMET_TAG;
 
     /**
      * The Player's Currently equipped Chest's Tag, if any
      */
-    private CompoundNBT CURRENT_CHEST_TAG;
+    private CompoundTag CURRENT_CHEST_TAG;
 
     /**
      * The Player's Currently equipped Leggings Tag, if any
      */
-    private CompoundNBT CURRENT_LEGS_TAG;
+    private CompoundTag CURRENT_LEGS_TAG;
 
     /**
      * The Player's Currently equipped Boots Tag, if any
      */
-    private CompoundNBT CURRENT_BOOTS_TAG;
+    private CompoundTag CURRENT_BOOTS_TAG;
 
     /**
      * If the Player doesn't have any Items in the Critical Slots such as equipped items or armor
@@ -306,7 +306,7 @@ public class TileEntityUtils {
      * @return {@code true} if the Block classifies as NULL or EMPTY
      */
     private boolean isEmpty(final Block block) {
-        return block == null || isEmpty(Item.getItemFromBlock(block));
+        return block == null || isEmpty(block.asItem());
     }
 
     /**
@@ -343,25 +343,25 @@ public class TileEntityUtils {
      * Synchronizes Data related to this module, if needed
      */
     private void updateEntityData() {
-        final ItemStack NEW_CURRENT_MAIN_HAND_ITEM = CraftPresence.player.getHeldItemMainhand();
-        final ItemStack NEW_CURRENT_OFFHAND_ITEM = CraftPresence.player.getHeldItemOffhand();
-        final ItemStack NEW_CURRENT_HELMET = CraftPresence.player.inventory.armorInventory.get(3);
-        final ItemStack NEW_CURRENT_CHEST = CraftPresence.player.inventory.armorInventory.get(2);
-        final ItemStack NEW_CURRENT_LEGS = CraftPresence.player.inventory.armorInventory.get(1);
-        final ItemStack NEW_CURRENT_BOOTS = CraftPresence.player.inventory.armorInventory.get(0);
+        final ItemStack NEW_CURRENT_MAIN_HAND_ITEM = CraftPresence.player.getMainHandStack();
+        final ItemStack NEW_CURRENT_OFFHAND_ITEM = CraftPresence.player.getOffHandStack();
+        final ItemStack NEW_CURRENT_HELMET = CraftPresence.player.inventory.armor.get(3);
+        final ItemStack NEW_CURRENT_CHEST = CraftPresence.player.inventory.armor.get(2);
+        final ItemStack NEW_CURRENT_LEGS = CraftPresence.player.inventory.armor.get(1);
+        final ItemStack NEW_CURRENT_BOOTS = CraftPresence.player.inventory.armor.get(0);
 
         final String NEW_CURRENT_MAIN_HAND_ITEM_NAME = !isEmpty(NEW_CURRENT_MAIN_HAND_ITEM) ?
-                StringUtils.stripColors(NEW_CURRENT_MAIN_HAND_ITEM.getDisplayName().getFormattedText()) : "";
+                StringUtils.stripColors(NEW_CURRENT_MAIN_HAND_ITEM.getName().asFormattedString()) : "";
         final String NEW_CURRENT_OFFHAND_ITEM_NAME = !isEmpty(NEW_CURRENT_OFFHAND_ITEM) ?
-                StringUtils.stripColors(NEW_CURRENT_OFFHAND_ITEM.getDisplayName().getFormattedText()) : "";
+                StringUtils.stripColors(NEW_CURRENT_OFFHAND_ITEM.getName().asFormattedString()) : "";
         final String NEW_CURRENT_HELMET_NAME = !isEmpty(NEW_CURRENT_HELMET) ?
-                StringUtils.stripColors(NEW_CURRENT_HELMET.getDisplayName().getFormattedText()) : "";
+                StringUtils.stripColors(NEW_CURRENT_HELMET.getName().asFormattedString()) : "";
         final String NEW_CURRENT_CHEST_NAME = !isEmpty(NEW_CURRENT_CHEST) ?
-                StringUtils.stripColors(NEW_CURRENT_CHEST.getDisplayName().getFormattedText()) : "";
+                StringUtils.stripColors(NEW_CURRENT_CHEST.getName().asFormattedString()) : "";
         final String NEW_CURRENT_LEGS_NAME = !isEmpty(NEW_CURRENT_LEGS) ?
-                StringUtils.stripColors(NEW_CURRENT_LEGS.getDisplayName().getFormattedText()) : "";
+                StringUtils.stripColors(NEW_CURRENT_LEGS.getName().asFormattedString()) : "";
         final String NEW_CURRENT_BOOTS_NAME = !isEmpty(NEW_CURRENT_BOOTS) ?
-                StringUtils.stripColors(NEW_CURRENT_BOOTS.getDisplayName().getFormattedText()) : "";
+                StringUtils.stripColors(NEW_CURRENT_BOOTS.getName().asFormattedString()) : "";
 
         final boolean hasMainHandChanged = (!isEmpty(NEW_CURRENT_MAIN_HAND_ITEM) &&
                 !NEW_CURRENT_MAIN_HAND_ITEM.equals(CURRENT_MAIN_HAND_ITEM) || !NEW_CURRENT_MAIN_HAND_ITEM_NAME.equals(CURRENT_MAIN_HAND_ITEM_NAME)) ||
@@ -384,8 +384,8 @@ public class TileEntityUtils {
 
         if (hasMainHandChanged) {
             CURRENT_MAIN_HAND_ITEM = NEW_CURRENT_MAIN_HAND_ITEM;
-            CURRENT_MAIN_HAND_ITEM_TAG = !isEmpty(CURRENT_MAIN_HAND_ITEM) ? CURRENT_MAIN_HAND_ITEM.write(new CompoundNBT()) : null;
-            final List<String> NEW_CURRENT_MAIN_HAND_ITEM_TAGS = CURRENT_MAIN_HAND_ITEM_TAG != null ? Lists.newArrayList(CURRENT_MAIN_HAND_ITEM_TAG.keySet()) : Lists.newArrayList();
+            CURRENT_MAIN_HAND_ITEM_TAG = !isEmpty(CURRENT_MAIN_HAND_ITEM) ? CURRENT_MAIN_HAND_ITEM.toTag(new CompoundTag()) : null;
+            final List<String> NEW_CURRENT_MAIN_HAND_ITEM_TAGS = CURRENT_MAIN_HAND_ITEM_TAG != null ? Lists.newArrayList(CURRENT_MAIN_HAND_ITEM_TAG.getKeys()) : Lists.newArrayList();
 
             if (!NEW_CURRENT_MAIN_HAND_ITEM_TAGS.equals(CURRENT_MAIN_HAND_ITEM_TAGS)) {
                 CURRENT_MAIN_HAND_ITEM_TAGS = NEW_CURRENT_MAIN_HAND_ITEM_TAGS;
@@ -395,8 +395,8 @@ public class TileEntityUtils {
 
         if (hasOffHandChanged) {
             CURRENT_OFFHAND_ITEM = NEW_CURRENT_OFFHAND_ITEM;
-            CURRENT_OFFHAND_ITEM_TAG = !isEmpty(CURRENT_OFFHAND_ITEM) ? CURRENT_OFFHAND_ITEM.write(new CompoundNBT()) : null;
-            final List<String> NEW_CURRENT_OFFHAND_ITEM_TAGS = CURRENT_OFFHAND_ITEM_TAG != null ? Lists.newArrayList(CURRENT_OFFHAND_ITEM_TAG.keySet()) : Lists.newArrayList();
+            CURRENT_OFFHAND_ITEM_TAG = !isEmpty(CURRENT_OFFHAND_ITEM) ? CURRENT_OFFHAND_ITEM.toTag(new CompoundTag()) : null;
+            final List<String> NEW_CURRENT_OFFHAND_ITEM_TAGS = CURRENT_OFFHAND_ITEM_TAG != null ? Lists.newArrayList(CURRENT_OFFHAND_ITEM_TAG.getKeys()) : Lists.newArrayList();
 
             if (!NEW_CURRENT_OFFHAND_ITEM_TAGS.equals(CURRENT_OFFHAND_ITEM_TAGS)) {
                 CURRENT_OFFHAND_ITEM_TAGS = NEW_CURRENT_OFFHAND_ITEM_TAGS;
@@ -406,8 +406,8 @@ public class TileEntityUtils {
 
         if (hasHelmetChanged) {
             CURRENT_HELMET = NEW_CURRENT_HELMET;
-            CURRENT_HELMET_TAG = !isEmpty(CURRENT_HELMET) ? CURRENT_HELMET.write(new CompoundNBT()) : null;
-            final List<String> NEW_CURRENT_HELMET_TAGS = CURRENT_HELMET_TAG != null ? Lists.newArrayList(CURRENT_HELMET_TAG.keySet()) : Lists.newArrayList();
+            CURRENT_HELMET_TAG = !isEmpty(CURRENT_HELMET) ? CURRENT_HELMET.toTag(new CompoundTag()) : null;
+            final List<String> NEW_CURRENT_HELMET_TAGS = CURRENT_HELMET_TAG != null ? Lists.newArrayList(CURRENT_HELMET_TAG.getKeys()) : Lists.newArrayList();
 
             if (!NEW_CURRENT_HELMET_TAGS.equals(CURRENT_HELMET_TAGS)) {
                 CURRENT_HELMET_TAGS = NEW_CURRENT_HELMET_TAGS;
@@ -417,8 +417,8 @@ public class TileEntityUtils {
 
         if (hasChestChanged) {
             CURRENT_CHEST = NEW_CURRENT_CHEST;
-            CURRENT_CHEST_TAG = !isEmpty(CURRENT_CHEST) ? CURRENT_CHEST.write(new CompoundNBT()) : null;
-            final List<String> NEW_CURRENT_CHEST_TAGS = CURRENT_CHEST_TAG != null ? Lists.newArrayList(CURRENT_CHEST_TAG.keySet()) : Lists.newArrayList();
+            CURRENT_CHEST_TAG = !isEmpty(CURRENT_CHEST) ? CURRENT_CHEST.toTag(new CompoundTag()) : null;
+            final List<String> NEW_CURRENT_CHEST_TAGS = CURRENT_CHEST_TAG != null ? Lists.newArrayList(CURRENT_CHEST_TAG.getKeys()) : Lists.newArrayList();
 
             if (!NEW_CURRENT_CHEST_TAGS.equals(CURRENT_CHEST_TAGS)) {
                 CURRENT_CHEST_TAGS = NEW_CURRENT_CHEST_TAGS;
@@ -428,8 +428,8 @@ public class TileEntityUtils {
 
         if (hasLegsChanged) {
             CURRENT_LEGS = NEW_CURRENT_LEGS;
-            CURRENT_LEGS_TAG = !isEmpty(CURRENT_LEGS) ? CURRENT_LEGS.write(new CompoundNBT()) : null;
-            final List<String> NEW_CURRENT_LEGS_TAGS = CURRENT_LEGS_TAG != null ? Lists.newArrayList(CURRENT_LEGS_TAG.keySet()) : Lists.newArrayList();
+            CURRENT_LEGS_TAG = !isEmpty(CURRENT_LEGS) ? CURRENT_LEGS.toTag(new CompoundTag()) : null;
+            final List<String> NEW_CURRENT_LEGS_TAGS = CURRENT_LEGS_TAG != null ? Lists.newArrayList(CURRENT_LEGS_TAG.getKeys()) : Lists.newArrayList();
 
             if (!NEW_CURRENT_LEGS_TAGS.equals(CURRENT_LEGS_TAGS)) {
                 CURRENT_LEGS_TAGS = NEW_CURRENT_LEGS_TAGS;
@@ -439,8 +439,8 @@ public class TileEntityUtils {
 
         if (hasBootsChanged) {
             CURRENT_BOOTS = NEW_CURRENT_BOOTS;
-            CURRENT_BOOTS_TAG = !isEmpty(CURRENT_BOOTS) ? CURRENT_BOOTS.write(new CompoundNBT()) : null;
-            final List<String> NEW_CURRENT_BOOTS_TAGS = CURRENT_BOOTS_TAG != null ? Lists.newArrayList(CURRENT_BOOTS_TAG.keySet()) : Lists.newArrayList();
+            CURRENT_BOOTS_TAG = !isEmpty(CURRENT_BOOTS) ? CURRENT_BOOTS.toTag(new CompoundTag()) : null;
+            final List<String> NEW_CURRENT_BOOTS_TAGS = CURRENT_BOOTS_TAG != null ? Lists.newArrayList(CURRENT_BOOTS_TAG.getKeys()) : Lists.newArrayList();
 
             if (!NEW_CURRENT_BOOTS_TAGS.equals(CURRENT_BOOTS_TAGS)) {
                 CURRENT_BOOTS_TAGS = NEW_CURRENT_BOOTS_TAGS;
@@ -610,17 +610,17 @@ public class TileEntityUtils {
 
         for (Block block : defaultBlocks) {
             if (!isEmpty(block)) {
-                if (!BLOCK_NAMES.contains(block.getNameTextComponent().getFormattedText())) {
-                    BLOCK_NAMES.add(block.getNameTextComponent().getFormattedText());
+                if (!BLOCK_NAMES.contains(block.getName().asFormattedString())) {
+                    BLOCK_NAMES.add(block.getName().asFormattedString());
                 }
                 if (!BLOCK_CLASSES.contains(block.getClass().getName())) {
                     BLOCK_CLASSES.add(block.getClass().getName());
                 }
 
-                if (!TILE_ENTITY_RESOURCES.containsKey(block.getNameTextComponent().getFormattedText())) {
-                    final ResourceLocation initialData = Registry.BLOCK.getKey(block);
-                    TILE_ENTITY_RESOURCES.put(block.getNameTextComponent().getFormattedText(),
-                            new ResourceLocation(initialData.getNamespace(),
+                if (!TILE_ENTITY_RESOURCES.containsKey(block.getName().asFormattedString())) {
+                    final Identifier initialData = Registry.BLOCK.getId(block);
+                    TILE_ENTITY_RESOURCES.put(block.getName().asFormattedString(),
+                            new Identifier(initialData.getNamespace(),
                                     (ModUtils.MCProtocolID > 340 ? "textures/block/" : "textures/blocks/") + initialData.getPath() + ".png"));
                 }
             }
@@ -628,17 +628,17 @@ public class TileEntityUtils {
 
         for (Item item : defaultItems) {
             if (!isEmpty(item)) {
-                if (!ITEM_NAMES.contains(item.getDisplayName(getDefaultInstance(item)).getFormattedText())) {
-                    ITEM_NAMES.add(item.getDisplayName(getDefaultInstance(item)).getFormattedText());
+                if (!ITEM_NAMES.contains(item.getName(getDefaultInstance(item)).asFormattedString())) {
+                    ITEM_NAMES.add(item.getName(getDefaultInstance(item)).asFormattedString());
                 }
                 if (!ITEM_CLASSES.contains(item.getClass().getName())) {
                     ITEM_CLASSES.add(item.getClass().getName());
                 }
 
-                if (!TILE_ENTITY_RESOURCES.containsKey(item.getDisplayName(getDefaultInstance(item)).getFormattedText())) {
-                    final ResourceLocation initialData = Registry.ITEM.getKey(item);
-                    TILE_ENTITY_RESOURCES.put(item.getDisplayName(getDefaultInstance(item)).getFormattedText(),
-                            new ResourceLocation(initialData.getNamespace(),
+                if (!TILE_ENTITY_RESOURCES.containsKey(item.getName(getDefaultInstance(item)).asFormattedString())) {
+                    final Identifier initialData = Registry.ITEM.getId(item);
+                    TILE_ENTITY_RESOURCES.put(item.getName(getDefaultInstance(item)).asFormattedString(),
+                            new Identifier(initialData.getNamespace(),
                                     (ModUtils.MCProtocolID > 340 ? "textures/item/" : "textures/items/") + initialData.getPath() + ".png"));
                 }
             }

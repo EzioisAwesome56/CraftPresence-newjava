@@ -37,13 +37,13 @@ import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ExtendedButtonContr
 import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ExtendedScreen;
 import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ExtendedTextControl;
 import com.google.common.collect.Lists;
-import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.gui.screen.ingame.ContainerScreen;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormats;
+import net.minecraft.util.Identifier;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -121,11 +121,11 @@ public class GuiUtils {
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-        buffer.pos(x, y + height, zLevel).tex(u * uScale, ((v + height) * vScale)).endVertex();
-        buffer.pos(x + width, y + height, zLevel).tex((u + width) * uScale, ((v + height) * vScale)).endVertex();
-        buffer.pos(x + width, y, zLevel).tex((u + width) * uScale, (v * vScale)).endVertex();
-        buffer.pos(x, y, zLevel).tex(u * uScale, (v * vScale)).endVertex();
+        buffer.begin(GL11.GL_QUADS, VertexFormats.POSITION_TEXTURE);
+        buffer.vertex(x, y + height, zLevel).texture(u * uScale, ((v + height) * vScale)).next();
+        buffer.vertex(x + width, y + height, zLevel).texture((u + width) * uScale, ((v + height) * vScale)).next();
+        buffer.vertex(x + width, y, zLevel).texture((u + width) * uScale, (v * vScale)).next();
+        buffer.vertex(x, y, zLevel).texture(u * uScale, (v * vScale)).next();
         GL11.glEnable(GL11.GL_ALPHA_TEST);
         tessellator.draw();
     }
@@ -260,7 +260,7 @@ public class GuiUtils {
      * @param targetScreen The target Gui Screen to display
      */
     public void openScreen(final Screen targetScreen) {
-        CraftPresence.instance.execute(() -> CraftPresence.instance.displayGuiScreen(targetScreen));
+        CraftPresence.instance.execute(() -> CraftPresence.instance.openScreen(targetScreen));
     }
 
     /**
@@ -355,7 +355,7 @@ public class GuiUtils {
      * @param fontRenderer   The font renderer to use to render the String
      * @param withBackground Whether a background should display around and under the String, like a tooltip
      */
-    public void drawMultiLineString(final List<String> textToInput, int posX, int posY, int screenWidth, int screenHeight, int maxTextWidth, FontRenderer fontRenderer, boolean withBackground) {
+    public void drawMultiLineString(final List<String> textToInput, int posX, int posY, int screenWidth, int screenHeight, int maxTextWidth, TextRenderer fontRenderer, boolean withBackground) {
         if (CraftPresence.CONFIG.renderTooltips && !ModUtils.forceBlockTooltipRendering && !textToInput.isEmpty() && fontRenderer != null) {
             List<String> textLines = textToInput;
             int tooltipTextWidth = 0;
@@ -439,7 +439,7 @@ public class GuiUtils {
 
                 final int zLevel = 300;
                 String backgroundColor, borderColor;
-                ResourceLocation backGroundTexture, borderTexture;
+                Identifier backGroundTexture, borderTexture;
 
                 // Perform Checks for different Color Format Fixes
                 // Fix 1 Example: hexCodeHere -> #hexCodeHere
@@ -479,9 +479,9 @@ public class GuiUtils {
 
                         if (backgroundColor.contains(":")) {
                             String[] splitInput = backgroundColor.split(":", 2);
-                            backGroundTexture = new ResourceLocation(splitInput[0], splitInput[1]);
+                            backGroundTexture = new Identifier(splitInput[0], splitInput[1]);
                         } else {
-                            backGroundTexture = new ResourceLocation(backgroundColor);
+                            backGroundTexture = new Identifier(backgroundColor);
                         }
                     } else {
                         final String formattedConvertedName = CraftPresence.CONFIG.tooltipBackgroundColor.replaceFirst("file://", "");
@@ -529,9 +529,9 @@ public class GuiUtils {
 
                         if (borderColor.contains(":")) {
                             String[] splitInput = borderColor.split(":", 2);
-                            borderTexture = new ResourceLocation(splitInput[0], splitInput[1]);
+                            borderTexture = new Identifier(splitInput[0], splitInput[1]);
                         } else {
-                            borderTexture = new ResourceLocation(borderColor);
+                            borderTexture = new Identifier(borderColor);
                         }
                     } else {
                         final String formattedConvertedName = CraftPresence.CONFIG.tooltipBorderColor.replaceFirst("file://", "");
@@ -549,7 +549,7 @@ public class GuiUtils {
 
             for (int lineNumber = 0; lineNumber < textLines.size(); ++lineNumber) {
                 String line = textLines.get(lineNumber);
-                fontRenderer.drawStringWithShadow(line, tooltipX, tooltipY, -1);
+                fontRenderer.drawWithShadow(line, tooltipX, tooltipY, -1);
 
                 if (lineNumber + 1 == titleLinesCount) {
                     tooltipY += 2;
@@ -576,7 +576,7 @@ public class GuiUtils {
             drawGradientRect(300, 0, 0, width, height, "-1072689136", "-804253680");
         } else {
             String backgroundCode = CraftPresence.CONFIG.guiBackgroundColor;
-            ResourceLocation texLocation;
+            Identifier texLocation;
 
             if (StringUtils.isValidColorCode(backgroundCode)) {
                 drawGradientRect(300, 0, 0, width, height, backgroundCode, backgroundCode);
@@ -590,9 +590,9 @@ public class GuiUtils {
 
                     if (backgroundCode.contains(":")) {
                         String[] splitInput = backgroundCode.split(":", 2);
-                        texLocation = new ResourceLocation(splitInput[0], splitInput[1]);
+                        texLocation = new Identifier(splitInput[0], splitInput[1]);
                     } else {
-                        texLocation = new ResourceLocation(backgroundCode);
+                        texLocation = new Identifier(backgroundCode);
                     }
                 } else {
                     final String formattedConvertedName = backgroundCode.replaceFirst("file://", "");
@@ -621,7 +621,7 @@ public class GuiUtils {
      * @param zLevel      The Z level position for the slider to render at
      * @param texLocation The game texture to render the slider as
      */
-    public void renderSlider(int x, int y, int u, int v, int width, int height, double zLevel, ResourceLocation texLocation) {
+    public void renderSlider(int x, int y, int u, int v, int width, int height, double zLevel, Identifier texLocation) {
         try {
             if (texLocation != null) {
                 CraftPresence.instance.getTextureManager().bindTexture(texLocation);
@@ -645,7 +645,7 @@ public class GuiUtils {
      * @param zLevel      The Z level position for the button to render at
      * @param texLocation The game texture to render the button as
      */
-    public void renderButton(int x, int y, int width, int height, int hoverState, double zLevel, ResourceLocation texLocation) {
+    public void renderButton(int x, int y, int width, int height, int hoverState, double zLevel, Identifier texLocation) {
         try {
             if (texLocation != null) {
                 CraftPresence.instance.getTextureManager().bindTexture(texLocation);
@@ -676,7 +676,7 @@ public class GuiUtils {
      * @param tint        The Tinting Level of the Object
      * @param texLocation The game texture to render the object as
      */
-    public void drawTextureRect(double zLevel, double xPos, double yPos, double width, double height, double tint, ResourceLocation texLocation) {
+    public void drawTextureRect(double zLevel, double xPos, double yPos, double width, double height, double tint, Identifier texLocation) {
         drawTextureRect(zLevel, xPos, yPos, width, height, tint, 32.0D, 32.0D, false, texLocation);
     }
 
@@ -692,7 +692,7 @@ public class GuiUtils {
      * @param shouldBeDark Whether the Texture should display in a darker format
      * @param texLocation  The game texture to render the object as
      */
-    public void drawTextureRect(double zLevel, double xPos, double yPos, double width, double height, double tint, double widthDivider, double heightDivider, boolean shouldBeDark, ResourceLocation texLocation) {
+    public void drawTextureRect(double zLevel, double xPos, double yPos, double width, double height, double tint, double widthDivider, double heightDivider, boolean shouldBeDark, Identifier texLocation) {
         try {
             if (texLocation != null) {
                 CraftPresence.instance.getTextureManager().bindTexture(texLocation);
@@ -708,11 +708,11 @@ public class GuiUtils {
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-        buffer.pos(xPos, yPos + height, zLevel).tex(0.0D, (height / heightDivider + tint)).color(rgbData.getFirst(), rgbData.getSecond(), rgbData.getSecond(), 255).endVertex();
-        buffer.pos(xPos + width, yPos + height, zLevel).tex((width / widthDivider), (height / heightDivider + tint)).color(rgbData.getFirst(), rgbData.getSecond(), rgbData.getSecond(), 255).endVertex();
-        buffer.pos(xPos + width, yPos, zLevel).tex((width / widthDivider), tint).color(rgbData.getFirst(), rgbData.getSecond(), rgbData.getSecond(), 255).endVertex();
-        buffer.pos(xPos, yPos, zLevel).tex(0.0D, tint).color(rgbData.getFirst(), rgbData.getSecond(), rgbData.getSecond(), 255).endVertex();
+        buffer.begin(GL11.GL_QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
+        buffer.vertex(xPos, yPos + height, zLevel).texture(0.0D, (height / heightDivider + tint)).color(rgbData.getFirst(), rgbData.getSecond(), rgbData.getSecond(), 255).next();
+        buffer.vertex(xPos + width, yPos + height, zLevel).texture((width / widthDivider), (height / heightDivider + tint)).color(rgbData.getFirst(), rgbData.getSecond(), rgbData.getSecond(), 255).next();
+        buffer.vertex(xPos + width, yPos, zLevel).texture((width / widthDivider), tint).color(rgbData.getFirst(), rgbData.getSecond(), rgbData.getSecond(), 255).next();
+        buffer.vertex(xPos, yPos, zLevel).texture(0.0D, tint).color(rgbData.getFirst(), rgbData.getSecond(), rgbData.getSecond(), 255).next();
         tessellator.draw();
     }
 
@@ -772,11 +772,11 @@ public class GuiUtils {
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-        buffer.pos(right, top, zLevel).color(startRed, startGreen, startBlue, startAlpha).endVertex();
-        buffer.pos(left, top, zLevel).color(startRed, startGreen, startBlue, startAlpha).endVertex();
-        buffer.pos(left, bottom, zLevel).color(endRed, endGreen, endBlue, endAlpha).endVertex();
-        buffer.pos(right, bottom, zLevel).color(endRed, endGreen, endBlue, endAlpha).endVertex();
+        buffer.begin(GL11.GL_QUADS, VertexFormats.POSITION_COLOR);
+        buffer.vertex(right, top, zLevel).color(startRed, startGreen, startBlue, startAlpha).next();
+        buffer.vertex(left, top, zLevel).color(startRed, startGreen, startBlue, startAlpha).next();
+        buffer.vertex(left, bottom, zLevel).color(endRed, endGreen, endBlue, endAlpha).next();
+        buffer.vertex(right, bottom, zLevel).color(endRed, endGreen, endBlue, endAlpha).next();
         tessellator.draw();
 
         GL11.glShadeModel(GL11.GL_FLAT);
@@ -799,7 +799,7 @@ public class GuiUtils {
      * @param texLocation        The game texture to render the object as
      */
     public void drawContinuousTexturedBox(Pair<Integer, Integer> positionData, Pair<Integer, Integer> uVLevels, Pair<Integer, Integer> screenDimensions, Pair<Integer, Integer> textureDimensions,
-                                          Pair<Integer, Integer> verticalBorderData, Pair<Integer, Integer> sideBorderData, double zLevel, ResourceLocation texLocation) {
+                                          Pair<Integer, Integer> verticalBorderData, Pair<Integer, Integer> sideBorderData, double zLevel, Identifier texLocation) {
         try {
             if (texLocation != null) {
                 CraftPresence.instance.getTextureManager().bindTexture(texLocation);
@@ -882,8 +882,8 @@ public class GuiUtils {
      *
      * @return The Default/Global Font Renderer
      */
-    public static FontRenderer getDefaultFontRenderer() {
-        return CraftPresence.instance.fontRenderer;
+    public static TextRenderer getDefaultFontRenderer() {
+        return CraftPresence.instance.textRenderer;
     }
 
     /**
@@ -892,6 +892,6 @@ public class GuiUtils {
      * @return The Default/Global Font Height for this Screen
      */
     public static int getDefaultFontHeight() {
-        return getDefaultFontRenderer().FONT_HEIGHT;
+        return getDefaultFontRenderer().fontHeight;
     }
 }

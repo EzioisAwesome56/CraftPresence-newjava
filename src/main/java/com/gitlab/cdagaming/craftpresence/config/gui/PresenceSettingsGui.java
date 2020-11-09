@@ -191,16 +191,16 @@ public class PresenceSettingsGui extends ExtendedScreen {
         }
 
         detailsFormat.setVisible(pageNumber == 0);
-        detailsFormat.setEnabled(detailsFormat.getVisible());
+        detailsFormat.setEditable(detailsFormat.isVisible());
 
         gameStateFormat.setVisible(pageNumber == 0);
-        gameStateFormat.setEnabled(gameStateFormat.getVisible());
+        gameStateFormat.setEditable(gameStateFormat.isVisible());
 
         largeImageFormat.setVisible(pageNumber == 0);
-        largeImageFormat.setEnabled(largeImageFormat.getVisible());
+        largeImageFormat.setEditable(largeImageFormat.isVisible());
 
         smallImageFormat.setVisible(pageNumber == 0);
-        smallImageFormat.setEnabled(smallImageFormat.getVisible());
+        smallImageFormat.setEditable(smallImageFormat.isVisible());
 
         if (pageNumber == 1) {
             renderString(smallImageKeyFormatTitle, (width / 2f) - 160, CraftPresence.GUIS.getButtonY(1) + 5, 0xFFFFFF);
@@ -208,10 +208,10 @@ public class PresenceSettingsGui extends ExtendedScreen {
         }
 
         smallImageKeyFormat.setVisible(pageNumber == 1);
-        smallImageKeyFormat.setEnabled(smallImageKeyFormat.getVisible());
+        smallImageKeyFormat.setEditable(smallImageKeyFormat.isVisible());
 
         largeImageKeyFormat.setVisible(pageNumber == 1);
-        largeImageKeyFormat.setEnabled(largeImageKeyFormat.getVisible());
+        largeImageKeyFormat.setEditable(largeImageKeyFormat.isVisible());
 
         previousPageButton.setControlEnabled(pageNumber != 0);
         nextPageButton.setControlEnabled(pageNumber != 1);

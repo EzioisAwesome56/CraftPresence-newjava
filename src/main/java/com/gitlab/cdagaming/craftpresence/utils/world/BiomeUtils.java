@@ -110,8 +110,8 @@ public class BiomeUtils {
      * Synchronizes Data related to this module, if needed
      */
     private void updateBiomeData() {
-        final Biome newBiome = CraftPresence.player.world.getBiome(CraftPresence.player.getPosition());
-        final String newBiomeName = newBiome.getDisplayName().getFormattedText();
+        final Biome newBiome = CraftPresence.player.world.getBiome(CraftPresence.player.getBlockPos());
+        final String newBiomeName = newBiome.getName().asFormattedString();
 
         if (!newBiomeName.equals(CURRENT_BIOME_NAME)) {
             CURRENT_BIOME_NAME = newBiomeName;
@@ -197,8 +197,8 @@ public class BiomeUtils {
     public void getBiomes() {
         for (Biome biome : getBiomeTypes()) {
             if (biome != null) {
-                if (!BIOME_NAMES.contains(biome.getDisplayName().getFormattedText())) {
-                    BIOME_NAMES.add(biome.getDisplayName().getFormattedText());
+                if (!BIOME_NAMES.contains(biome.getName().asFormattedString())) {
+                    BIOME_NAMES.add(biome.getName().asFormattedString());
                 }
                 if (!BIOME_TYPES.contains(biome)) {
                     BIOME_TYPES.add(biome);

@@ -28,9 +28,10 @@ import com.gitlab.cdagaming.craftpresence.CraftPresence;
 import com.gitlab.cdagaming.craftpresence.utils.ImageUtils;
 import com.gitlab.cdagaming.craftpresence.utils.StringUtils;
 import com.gitlab.cdagaming.craftpresence.utils.gui.GuiUtils;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.ResourceLocation;
+
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.util.Identifier;
 
 import java.io.File;
 
@@ -40,7 +41,7 @@ import java.io.File;
  * @author CDAGaming
  */
 @SuppressWarnings("DuplicatedCode")
-public class ExtendedButtonControl extends Button {
+public class ExtendedButtonControl extends ButtonWidget {
     /**
      * Optional Arguments used for functions within the Mod, if any
      */
@@ -56,7 +57,7 @@ public class ExtendedButtonControl extends Button {
     /**
      * The current running Font Render Instance for this control
      */
-    private FontRenderer currentFontRender = null;
+    private TextRenderer currentFontRender = null;
 
     /**
      * Initialization Event for this Control, assigning defined arguments
@@ -188,7 +189,7 @@ public class ExtendedButtonControl extends Button {
             final int hoverState = getYImage(isHovered);
 
             String backgroundCode = CraftPresence.CONFIG.buttonBackgroundColor;
-            ResourceLocation texLocation;
+            Identifier texLocation;
 
             if (StringUtils.isValidColorCode(backgroundCode)) {
                 CraftPresence.GUIS.drawGradientRect(blitOffset, getControlPosX(), getControlPosY(), getControlWidth(), getControlHeight(), backgroundCode, backgroundCode);
@@ -202,9 +203,9 @@ public class ExtendedButtonControl extends Button {
 
                     if (backgroundCode.contains(":")) {
                         String[] splitInput = backgroundCode.split(":", 2);
-                        texLocation = new ResourceLocation(splitInput[0], splitInput[1]);
+                        texLocation = new Identifier(splitInput[0], splitInput[1]);
                     } else {
-                        texLocation = new ResourceLocation(backgroundCode);
+                        texLocation = new Identifier(backgroundCode);
                     }
                 } else {
                     final String formattedConvertedName = backgroundCode.replaceFirst("file://", "");
@@ -272,7 +273,7 @@ public class ExtendedButtonControl extends Button {
      *
      * @return The Current Font Renderer for this Control
      */
-    public FontRenderer getFontRenderer() {
+    public TextRenderer getFontRenderer() {
         return currentFontRender != null ? currentFontRender : GuiUtils.getDefaultFontRenderer();
     }
 
@@ -281,7 +282,7 @@ public class ExtendedButtonControl extends Button {
      *
      * @param currentFontRender The new current font renderer
      */
-    public void setCurrentFontRender(final FontRenderer currentFontRender) {
+    public void setCurrentFontRender(final TextRenderer currentFontRender) {
         this.currentFontRender = currentFontRender;
     }
 
@@ -291,7 +292,7 @@ public class ExtendedButtonControl extends Button {
      * @return The Current Font Height for this Control
      */
     public int getFontHeight() {
-        return getFontRenderer().FONT_HEIGHT;
+        return getFontRenderer().fontHeight;
     }
 
     /**

@@ -39,9 +39,9 @@ import com.gitlab.cdagaming.craftpresence.utils.gui.GuiUtils;
 import com.gitlab.cdagaming.craftpresence.utils.server.ServerUtils;
 import com.gitlab.cdagaming.craftpresence.utils.world.BiomeUtils;
 import com.gitlab.cdagaming.craftpresence.utils.world.DimensionUtils;
-import net.minecraft.client.Minecraft;
+import net.fabricmc.api.ClientModInitializer;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraftforge.fml.common.Mod;
 
 import java.io.File;
 import java.lang.reflect.Modifier;
@@ -53,8 +53,7 @@ import java.util.TimerTask;
  *
  * @author CDAGaming
  */
-@Mod(ModUtils.MOD_ID)
-public class CraftPresence {
+public class CraftPresence implements ClientModInitializer {
     /**
      * Whether Pack Data was able to be Found and Parsed
      */
@@ -73,7 +72,7 @@ public class CraftPresence {
     /**
      * The Minecraft Instance attached to this Mod
      */
-    public static Minecraft instance = Minecraft.getInstance();
+    public static MinecraftClient instance = MinecraftClient.getInstance();
 
     /**
      * The Current Player detected from the Minecraft Instance
@@ -237,7 +236,7 @@ public class CraftPresence {
     private void clientTick() {
         if (!closing) {
             if (initialized) {
-                instance = Minecraft.getInstance();
+                instance = MinecraftClient.getInstance();
                 player = instance.player;
 
                 // Synchronize Developer and Verbose Modes with Config Options, if they were not overridden pre-setup
@@ -276,5 +275,10 @@ public class CraftPresence {
 
             scheduleTick();
         }
+    }
+
+    @Override
+    public void onInitializeClient() {
+        // N/A
     }
 }

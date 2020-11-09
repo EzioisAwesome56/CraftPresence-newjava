@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "craftpresence",
+  "version": "${version}",
+  "name": "CraftPresence",
+  "description": "Completely Customize the way others see you play in Discord!",
+  "authors": [
+    "CDAGaming"
+  ],
+  "contact": {
+    "homepage": "https://minecraft.curseforge.com/projects/craftpresence",
+    "sources": "https://gitlab.com/CDAGaming/CraftPresence",
+    "issues": "https://gitlab.com/CDAGaming/CraftPresence/issues"
+  },
+  "license": "MIT",
+  "icon": "assets/craftpresence/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "com.gitlab.cdagaming.craftpresence.CraftPresence"
+    ],
+    "modmenu": [
+      "com.gitlab.cdagaming.craftpresence.impl.ModMenuImpl"
+    ]
+  },
+  "custom": {
+    "modmenu:clientsideOnly": true
+  },
+  "depends": {
+    "fabricloader": ">=0.7.0",
+    "minecraft": "${mcversion}"
+  }
+}

@@ -65,8 +65,8 @@ public class CharacterEditorGui extends ExtendedScreen {
                         180, 20
                 )
         );
-        charInput.setMaxStringLength(1);
-        charWidth.setMaxStringLength(2);
+        charInput.setMaxLength(1);
+        charWidth.setMaxLength(2);
 
         final ExtendedButtonControl resetCharsButton = addControl(
                 new ExtendedButtonControl(
@@ -162,7 +162,7 @@ public class CharacterEditorGui extends ExtendedScreen {
         if (StringUtils.isNullOrEmpty(charInput.getText())) {
             charWidth.setText("");
             charWidth.setVisible(false);
-            charWidth.setEnabled(charWidth.getVisible());
+            charWidth.setEditable(charWidth.isVisible());
 
             syncSingleButton.setControlEnabled(false);
         }
@@ -174,7 +174,7 @@ public class CharacterEditorGui extends ExtendedScreen {
                 lastScannedChar = lastScannedString.charAt(0);
                 charWidth.setText(Integer.toString(StringUtils.getStringWidth(lastScannedString)));
                 charWidth.setVisible(true);
-                charWidth.setEnabled(charWidth.getVisible());
+                charWidth.setEditable(charWidth.isVisible());
 
                 syncSingleButton.setControlEnabled(true);
             } else {
@@ -182,7 +182,7 @@ public class CharacterEditorGui extends ExtendedScreen {
             }
         }
 
-        if (charWidth.getVisible()) {
+        if (charWidth.isVisible()) {
             // Only Draw string for Character Width when it's enabled
             renderString(charWidthTitle, (width / 2f) - 130, CraftPresence.GUIS.getButtonY(2) + 10, 0xFFFFFF);
         }

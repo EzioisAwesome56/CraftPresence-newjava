@@ -119,7 +119,7 @@ public class CommandsGui extends ExtendedScreen {
                         (width - 120), 20
                 )
         );
-        commandInput.setMaxStringLength(512);
+        commandInput.setMaxLength(512);
 
         proceedButton = addControl(
                 new ExtendedButtonControl(

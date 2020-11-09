@@ -32,9 +32,9 @@ import com.gitlab.cdagaming.craftpresence.impl.Tuple;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
-import net.minecraft.client.renderer.texture.DynamicTexture;
-import net.minecraft.client.renderer.texture.NativeImage;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.texture.NativeImage;
+import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.util.Identifier;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -65,7 +65,7 @@ public class ImageUtils {
      * <p>
      * Format: textureName;[[textureInputType, textureObj], [textureIndex, imageData], textureData]
      */
-    private static final Map<String, Tuple<Pair<InputType, Object>, Pair<Integer, List<ImageFrame>>, List<ResourceLocation>>> cachedImages = Maps.newHashMap();
+    private static final Map<String, Tuple<Pair<InputType, Object>, Pair<Integer, List<ImageFrame>>, List<Identifier>>> cachedImages = Maps.newHashMap();
     /**
      * The thread used for Url Image Events to take place within
      */
@@ -151,14 +151,14 @@ public class ImageUtils {
      * @param url         The url to retrieve the texture
      * @return The Resulting Texture Data
      */
-    public static ResourceLocation getTextureFromUrl(final String textureName, final String url) {
+    public static Identifier getTextureFromUrl(final String textureName, final String url) {
         try {
             return getTextureFromUrl(textureName, new URL(url));
         } catch (Exception ex) {
             if (ModUtils.IS_VERBOSE) {
                 ex.printStackTrace();
             }
-            return new ResourceLocation("");
+            return new Identifier("");
         }
     }
 
@@ -169,14 +169,14 @@ public class ImageUtils {
      * @param url         The url to retrieve the texture
      * @return The Resulting Texture Data
      */
-    public static ResourceLocation getTextureFromUrl(final String textureName, final URL url) {
+    public static Identifier getTextureFromUrl(final String textureName, final URL url) {
         try {
             return getTextureFromUrl(textureName, new Pair<>(InputType.Url, url));
         } catch (Exception ex) {
             if (ModUtils.IS_VERBOSE) {
                 ex.printStackTrace();
             }
-            return new ResourceLocation("");
+            return new Identifier("");
         }
     }
 
@@ -187,14 +187,14 @@ public class ImageUtils {
      * @param url         The url to retrieve the texture
      * @return The Resulting Texture Data
      */
-    public static ResourceLocation getTextureFromUrl(final String textureName, final File url) {
+    public static Identifier getTextureFromUrl(final String textureName, final File url) {
         try {
             return getTextureFromUrl(textureName, new Pair<>(InputType.FileData, url));
         } catch (Exception ex) {
             if (ModUtils.IS_VERBOSE) {
                 ex.printStackTrace();
             }
-            return new ResourceLocation("");
+            return new Identifier("");
         }
     }
 
@@ -205,7 +205,7 @@ public class ImageUtils {
      * @param url         The url to retrieve the texture
      * @return The Resulting Texture Data
      */
-    public static ResourceLocation getTextureFromUrl(final String textureName, final Object url) {
+    public static Identifier getTextureFromUrl(final String textureName, final Object url) {
         if (url instanceof File) {
             return getTextureFromUrl(textureName, (File) url);
         } else if (url instanceof URL) {
@@ -229,7 +229,7 @@ public class ImageUtils {
      * @param stream      Streaming Data containing data to read later
      * @return The Resulting Texture Data
      */
-    public static ResourceLocation getTextureFromUrl(final String textureName, final Pair<InputType, Object> stream) {
+    public static Identifier getTextureFromUrl(final String textureName, final Pair<InputType, Object> stream) {
         synchronized (cachedImages) {
             if (!cachedImages.containsKey(textureName)) {
                 // Setup Initial data if not present
@@ -249,14 +249,14 @@ public class ImageUtils {
             final Pair<Integer, List<ImageFrame>> bufferData = cachedImages.get(textureName).getSecond();
 
             if (bufferData == null || bufferData.getSecond() == null || bufferData.getSecond().isEmpty()) {
-                return new ResourceLocation("");
+                return new Identifier("");
             } else if (textureName != null) {
                 final boolean shouldRepeat = textureName.endsWith(".gif") || stream.getSecond().toString().contains("gif");
                 final boolean doesContinue = bufferData.getFirst() < bufferData.getSecond().size() - 1;
 
-                final List<ResourceLocation> resources = cachedImages.get(textureName).getThird();
+                final List<Identifier> resources = cachedImages.get(textureName).getThird();
                 if (bufferData.getFirst() < resources.size()) {
-                    final ResourceLocation texLocation = resources.get(bufferData.getFirst());
+                    final Identifier texLocation = resources.get(bufferData.getFirst());
                     if (bufferData.getSecond().get(bufferData.getFirst()).shouldRenderNext()) {
                         if (doesContinue) {
                             bufferData.getSecond().get(bufferData.setFirst(bufferData.getFirst() + 1)).setRenderTime(System.currentTimeMillis());
@@ -267,8 +267,8 @@ public class ImageUtils {
                     return texLocation;
                 }
                 try {
-                    final DynamicTexture dynTexture = new DynamicTexture(bufferData.getSecond().get(bufferData.getFirst()).getNativeImage());
-                    final ResourceLocation cachedTexture = CraftPresence.instance.getTextureManager().getDynamicTextureLocation(textureName + (textureName.endsWith(".gif") ? "_" + cachedImages.get(textureName).getSecond().getFirst() : ""), dynTexture);
+                    final NativeImageBackedTexture dynTexture = new NativeImageBackedTexture(bufferData.getSecond().get(bufferData.getFirst()).getNativeImage());
+                    final Identifier cachedTexture = CraftPresence.instance.getTextureManager().registerDynamicTexture(textureName + (textureName.endsWith(".gif") ? "_" + cachedImages.get(textureName).getSecond().getFirst() : ""), dynTexture);
                     if (bufferData.getSecond().get(bufferData.getFirst()).shouldRenderNext()) {
                         if (doesContinue) {
                             bufferData.getSecond().get(bufferData.setFirst(bufferData.getFirst() + 1)).setRenderTime(System.currentTimeMillis());
@@ -284,10 +284,10 @@ public class ImageUtils {
                     if (ModUtils.IS_VERBOSE) {
                         ex.printStackTrace();
                     }
-                    return new ResourceLocation("");
+                    return new Identifier("");
                 }
             } else {
-                return new ResourceLocation("");
+                return new Identifier("");
             }
         }
     }
@@ -334,7 +334,7 @@ public class ImageUtils {
      * @param location The texture to parse
      * @return Whether the specified Texture lacks critical information
      */
-    public static boolean isTextureNull(final ResourceLocation location) {
+    public static boolean isTextureNull(final Identifier location) {
         return location == null || (StringUtils.isNullOrEmpty(location.getNamespace()) || StringUtils.isNullOrEmpty(location.getPath()));
     }
 

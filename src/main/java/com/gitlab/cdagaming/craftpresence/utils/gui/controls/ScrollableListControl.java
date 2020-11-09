@@ -30,11 +30,12 @@ import com.gitlab.cdagaming.craftpresence.utils.ImageUtils;
 import com.gitlab.cdagaming.craftpresence.utils.StringUtils;
 import com.gitlab.cdagaming.craftpresence.utils.discord.assets.DiscordAssetUtils;
 import com.gitlab.cdagaming.craftpresence.utils.gui.GuiUtils;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.SlotGui;
-import net.minecraft.client.multiplayer.ServerData;
-import net.minecraft.util.ResourceLocation;
+
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.widget.ListWidget;
+import net.minecraft.client.network.ServerInfo;
+import net.minecraft.util.Identifier;
 
 import java.util.List;
 
@@ -43,7 +44,7 @@ import java.util.List;
  *
  * @author CDAGaming
  */
-public class ScrollableListControl extends SlotGui {
+public class ScrollableListControl extends ListWidget {
     /**
      * The Currently Selected Value in the List
      */
@@ -71,7 +72,7 @@ public class ScrollableListControl extends SlotGui {
      * @param itemList     The List of items to allocate for the slots in the Gui
      * @param currentValue The current value, if any, to select upon initialization of the Gui
      */
-    public ScrollableListControl(Minecraft mc, int width, int height, int topIn, int bottomIn, int slotHeightIn, List<String> itemList, String currentValue) {
+    public ScrollableListControl(MinecraftClient mc, int width, int height, int topIn, int bottomIn, int slotHeightIn, List<String> itemList, String currentValue) {
         this(mc, width, height, topIn, bottomIn, slotHeightIn, itemList, currentValue, RenderType.None);
     }
 
@@ -88,7 +89,7 @@ public class ScrollableListControl extends SlotGui {
      * @param currentValue The current value, if any, to select upon initialization of the Gui
      * @param renderType   The Rendering type for this Scroll List
      */
-    public ScrollableListControl(Minecraft mc, int width, int height, int topIn, int bottomIn, int slotHeightIn, List<String> itemList, String currentValue, RenderType renderType) {
+    public ScrollableListControl(MinecraftClient mc, int width, int height, int topIn, int bottomIn, int slotHeightIn, List<String> itemList, String currentValue, RenderType renderType) {
         super(mc, width, height, topIn, bottomIn, slotHeightIn);
         this.itemList = itemList;
         this.currentValue = currentValue;
@@ -159,14 +160,14 @@ public class ScrollableListControl extends SlotGui {
         String displayName = getSelectedItem(slotIndex);
         if (!CraftPresence.CONFIG.stripExtraGuiElements &&
                 (renderType == RenderType.DiscordAsset || (renderType == RenderType.ServerData && CraftPresence.SERVER.enabled) || (renderType == RenderType.EntityData && CraftPresence.ENTITIES.enabled) || (renderType == RenderType.ItemData && CraftPresence.TILE_ENTITIES.enabled))) {
-            ResourceLocation texture = new ResourceLocation("");
+            Identifier texture = new Identifier("");
             String assetUrl;
 
             if (renderType == RenderType.ServerData) {
-                final ServerData data = CraftPresence.SERVER.getDataFromName(displayName);
+                final ServerInfo data = CraftPresence.SERVER.getDataFromName(displayName);
 
                 if (data != null) {
-                    assetUrl = StringUtils.UNKNOWN_BASE64_ID + "," + data.getBase64EncodedIconData();
+                    assetUrl = StringUtils.UNKNOWN_BASE64_ID + "," + data.getIcon();
                     texture = ImageUtils.getTextureFromUrl(displayName, new Pair<>(ImageUtils.InputType.ByteStream, assetUrl));
                 }
             } else if (renderType == RenderType.DiscordAsset) {
@@ -187,7 +188,7 @@ public class ScrollableListControl extends SlotGui {
             // Note: 35 Added to xOffset to accommodate for Image Size
             xOffset += 35;
         }
-        getFontRenderer().drawStringWithShadow(displayName, xOffset, yPos + ((heightIn / 2f) - (getFontRenderer().FONT_HEIGHT / 2f)), 0xFFFFFF);
+        getFontRenderer().drawWithShadow(displayName, xOffset, yPos + ((heightIn / 2f) - (getFontRenderer().fontHeight / 2f)), 0xFFFFFF);
     }
 
     /**
@@ -209,8 +210,8 @@ public class ScrollableListControl extends SlotGui {
      *
      * @return The Current Font Renderer for this Control
      */
-    public FontRenderer getFontRenderer() {
-        return minecraft.fontRenderer != null ? minecraft.fontRenderer : GuiUtils.getDefaultFontRenderer();
+    public TextRenderer getFontRenderer() {
+        return minecraft.textRenderer != null ? minecraft.textRenderer : GuiUtils.getDefaultFontRenderer();
     }
 
     /**
@@ -219,7 +220,7 @@ public class ScrollableListControl extends SlotGui {
      * @return The Current Font Height for this Control
      */
     public int getFontHeight() {
-        return getFontRenderer().FONT_HEIGHT;
+        return getFontRenderer().fontHeight;
     }
 
     /**

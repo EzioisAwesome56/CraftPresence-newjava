@@ -349,22 +349,22 @@ public class StatusMessagesGui extends ExtendedScreen {
         }
 
         mainMenuMessage.setVisible(pageNumber == 0);
-        mainMenuMessage.setEnabled(mainMenuMessage.getVisible());
+        mainMenuMessage.setEditable(mainMenuMessage.isVisible());
 
         lanMessage.setVisible(pageNumber == 0);
-        lanMessage.setEnabled(lanMessage.getVisible());
+        lanMessage.setEditable(lanMessage.isVisible());
 
         singlePlayerMessage.setVisible(pageNumber == 0);
-        singlePlayerMessage.setEnabled(singlePlayerMessage.getVisible());
+        singlePlayerMessage.setEditable(singlePlayerMessage.isVisible());
 
         packMessage.setVisible(pageNumber == 0);
-        packMessage.setEnabled(packMessage.getVisible());
+        packMessage.setEditable(packMessage.isVisible());
 
         modsMessage.setVisible(pageNumber == 0);
-        modsMessage.setEnabled(modsMessage.getVisible());
+        modsMessage.setEditable(modsMessage.isVisible());
 
         viveCraftMessage.setVisible(pageNumber == 0);
-        viveCraftMessage.setEnabled(viveCraftMessage.getVisible());
+        viveCraftMessage.setEditable(viveCraftMessage.isVisible());
 
         if (pageNumber == 1) {
             renderString(outerPlayerText, (width / 2f) - 160, CraftPresence.GUIS.getButtonY(1) + 5, 0xFFFFFF);
@@ -376,22 +376,22 @@ public class StatusMessagesGui extends ExtendedScreen {
         }
 
         outerPlayerMessage.setVisible(pageNumber == 1);
-        outerPlayerMessage.setEnabled(outerPlayerMessage.getVisible());
+        outerPlayerMessage.setEditable(outerPlayerMessage.isVisible());
 
         innerPlayerMessage.setVisible(pageNumber == 1);
-        innerPlayerMessage.setEnabled(innerPlayerMessage.getVisible());
+        innerPlayerMessage.setEditable(innerPlayerMessage.isVisible());
 
         playerCoordsMessage.setVisible(pageNumber == 1);
-        playerCoordsMessage.setEnabled(playerCoordsMessage.getVisible());
+        playerCoordsMessage.setEditable(playerCoordsMessage.isVisible());
 
         playerHealthMessage.setVisible(pageNumber == 1);
-        playerHealthMessage.setEnabled(playerHealthMessage.getVisible());
+        playerHealthMessage.setEditable(playerHealthMessage.isVisible());
 
         playerAmountMessage.setVisible(pageNumber == 1);
-        playerAmountMessage.setEnabled(playerAmountMessage.getVisible());
+        playerAmountMessage.setEditable(playerAmountMessage.isVisible());
 
         worldMessage.setVisible(pageNumber == 1);
-        worldMessage.setEnabled(worldMessage.getVisible());
+        worldMessage.setEditable(worldMessage.isVisible());
 
         if (pageNumber == 2) {
             renderString(loadingText, (width / 2f) - 160, CraftPresence.GUIS.getButtonY(1) + 5, 0xFFFFFF);
@@ -400,13 +400,13 @@ public class StatusMessagesGui extends ExtendedScreen {
         }
 
         loadingMessage.setVisible(pageNumber == 2);
-        loadingMessage.setEnabled(loadingMessage.getVisible());
+        loadingMessage.setEditable(loadingMessage.isVisible());
 
         playerItemsMessage.setVisible(pageNumber == 2);
-        playerItemsMessage.setEnabled(playerItemsMessage.getVisible());
+        playerItemsMessage.setEditable(playerItemsMessage.isVisible());
 
         fallbackPackPlaceholderMessage.setVisible(pageNumber == 2);
-        fallbackPackPlaceholderMessage.setEnabled(fallbackPackPlaceholderMessage.getVisible());
+        fallbackPackPlaceholderMessage.setEditable(fallbackPackPlaceholderMessage.isVisible());
 
         previousPageButton.setControlEnabled(pageNumber != 0);
         nextPageButton.setControlEnabled(pageNumber != 2);

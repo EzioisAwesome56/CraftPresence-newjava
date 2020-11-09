@@ -164,7 +164,7 @@ public class TranslationUtils {
             checkUnicode();
         }
 
-        if (CraftPresence.instance.gameSettings != null && isUnicode != CraftPresence.instance.gameSettings.forceUnicodeFont) {
+        if (CraftPresence.instance.options != null && isUnicode != CraftPresence.instance.options.forceUnicodeFont) {
             checkUnicode();
         }
     }
@@ -189,7 +189,7 @@ public class TranslationUtils {
         }
 
         float f = (float) extendedCharCount / (float) totalLength;
-        isUnicode = (double) f > 0.1D || (CraftPresence.instance.gameSettings != null && CraftPresence.instance.gameSettings.forceUnicodeFont);
+        isUnicode = (double) f > 0.1D || (CraftPresence.instance.options != null && CraftPresence.instance.options.forceUnicodeFont);
     }
 
     /**

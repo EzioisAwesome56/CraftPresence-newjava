@@ -37,7 +37,8 @@ import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ExtendedScreen;
 import com.gitlab.cdagaming.craftpresence.utils.gui.controls.ExtendedTextControl;
 import com.gitlab.cdagaming.craftpresence.utils.gui.controls.SliderControl;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
+
 import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
@@ -63,7 +64,7 @@ public class ColorEditorGui extends ExtendedScreen {
     private String currentConvertedTexturePath;
     private ExtendedTextControl textureText;
     private boolean isModified = false;
-    private ResourceLocation currentTexture;
+    private Identifier currentTexture;
 
     public ColorEditorGui(Screen parentScreen, String configValueName, PairConsumer<Integer, ColorEditorGui> onAdjustEntry, DataConsumer<ColorEditorGui> onInit) {
         super(parentScreen);
@@ -91,7 +92,7 @@ public class ColorEditorGui extends ExtendedScreen {
                         180, 20
                 )
         );
-        hexText.setMaxStringLength(10);
+        hexText.setMaxLength(10);
 
         redText = addControl(
                 new SliderControl(
@@ -163,7 +164,7 @@ public class ColorEditorGui extends ExtendedScreen {
                         this::syncValues
                 )
         );
-        textureText.setMaxStringLength(32767);
+        textureText.setMaxLength(32767);
 
         proceedButton = addControl(
                 new ExtendedButtonControl(
@@ -223,7 +224,7 @@ public class ColorEditorGui extends ExtendedScreen {
 
         // Ensure Button Activity on Page 1
         hexText.setVisible(pageNumber == 0);
-        hexText.setEnabled(hexText.getVisible());
+        hexText.setEditable(hexText.isVisible());
 
         redText.setControlEnabled(pageNumber == 0);
         redText.setControlVisible(redText.isControlEnabled());
@@ -236,7 +237,7 @@ public class ColorEditorGui extends ExtendedScreen {
 
         // Ensure Button Activity on Page 2
         textureText.setVisible(pageNumber == 1);
-        textureText.setEnabled(textureText.getVisible());
+        textureText.setEditable(textureText.isVisible());
 
         // Setup Data for Drawing
         double tooltipX = width - 45;
@@ -268,7 +269,7 @@ public class ColorEditorGui extends ExtendedScreen {
             proceedButton.setControlEnabled(!StringUtils.isNullOrEmpty(textureText.getText()));
 
             if (currentTexture == null) {
-                currentTexture = new ResourceLocation("");
+                currentTexture = new Identifier("");
             }
 
             // Ensure the Texture is refreshed consistently, if an external texture
@@ -328,14 +329,14 @@ public class ColorEditorGui extends ExtendedScreen {
                 currentNormalHexValue = null;
                 currentConvertedHexValue = null;
                 currentConvertedTexturePath = null;
-                currentTexture = new ResourceLocation("");
+                currentTexture = new Identifier("");
                 pageNumber = 0;
             } else if (StringUtils.isNullOrEmpty(textureText.getText()) && !StringUtils.isNullOrEmpty(startingTexturePath)) {
                 textureText.setText(startingTexturePath);
                 currentNormalHexValue = null;
                 currentConvertedHexValue = null;
                 currentConvertedTexturePath = null;
-                currentTexture = new ResourceLocation("");
+                currentTexture = new Identifier("");
                 pageNumber = 1;
             }
         }
@@ -434,9 +435,9 @@ public class ColorEditorGui extends ExtendedScreen {
                 if (!usingExternalTexture) {
                     if (currentConvertedTexturePath.contains(":")) {
                         final String[] splitInput = currentConvertedTexturePath.split(":", 2);
-                        currentTexture = new ResourceLocation(splitInput[0], splitInput[1]);
+                        currentTexture = new Identifier(splitInput[0], splitInput[1]);
                     } else {
-                        currentTexture = new ResourceLocation(currentConvertedTexturePath);
+                        currentTexture = new Identifier(currentConvertedTexturePath);
                     }
                 } else {
                     final String formattedConvertedName = currentConvertedTexturePath.replaceFirst("file://", "");
@@ -445,7 +446,7 @@ public class ColorEditorGui extends ExtendedScreen {
                     currentTexture = ImageUtils.getTextureFromUrl(textureName, currentConvertedTexturePath.toLowerCase().startsWith("file://") ? new File(formattedConvertedName) : formattedConvertedName);
                 }
             } else {
-                currentTexture = new ResourceLocation("");
+                currentTexture = new Identifier("");
             }
             isModified = !textureText.getText().equals(startingTexturePath.replace(CraftPresence.CONFIG.splitCharacter, ":"));
         }
