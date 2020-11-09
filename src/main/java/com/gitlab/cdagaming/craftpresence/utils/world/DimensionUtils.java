@@ -172,7 +172,7 @@ public class DimensionUtils {
      */
     private List<DimensionType> getDimensionTypes() {
         List<DimensionType> dimensionTypes = Lists.newArrayList();
-        List<DimensionType> defaultDimensionTypes = Lists.newArrayList(Registry.DIMENSION.iterator());
+        List<DimensionType> defaultDimensionTypes = Lists.newArrayList(Registry.DIMENSION_TYPE.iterator());
         Map<?, ?> reflectedDimensionTypes = (Map<?, ?>) StringUtils.lookupObject(DimensionType.class, null, "dimensionTypes");
 
         if (!defaultDimensionTypes.isEmpty()) {

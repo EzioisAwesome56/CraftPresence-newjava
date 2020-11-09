@@ -464,7 +464,7 @@ public class GuiUtils {
                     drawGradientRect(zLevel, tooltipX + tooltipTextWidth + 3, tooltipY - 3, tooltipX + tooltipTextWidth + 4, tooltipY + tooltipHeight + 3, backgroundColor, backgroundColor);
                 } else {
                     final boolean usingExternalTexture = ImageUtils.isExternalImage(CraftPresence.CONFIG.tooltipBackgroundColor);
-                    double widthDivider = 32.0D, heightDivider = 32.0D;
+                    float widthDivider = 32.0f, heightDivider = 32.0f;
 
                     if (!usingExternalTexture) {
                         if (CraftPresence.CONFIG.tooltipBackgroundColor.contains(CraftPresence.CONFIG.splitCharacter)) {
@@ -540,10 +540,10 @@ public class GuiUtils {
                         borderTexture = ImageUtils.getTextureFromUrl(textureName, CraftPresence.CONFIG.tooltipBorderColor.toLowerCase().startsWith("file://") ? new File(formattedConvertedName) : formattedConvertedName);
                     }
 
-                    drawTextureRect(zLevel, tooltipX - 3, tooltipY - 3, tooltipTextWidth + 5, 1, 0, (usingExternalTexture ? tooltipTextWidth + 5 : 32.0D), (usingExternalTexture ? 1 : 32.0D), false, borderTexture); // Top Border
-                    drawTextureRect(zLevel, tooltipX - 3, tooltipY + tooltipHeight + 2, tooltipTextWidth + 5, 1, 0, (usingExternalTexture ? tooltipTextWidth + 5 : 32.0D), (usingExternalTexture ? 1 : 32.0D), false, borderTexture); // Bottom Border
-                    drawTextureRect(zLevel, tooltipX - 3, tooltipY - 3, 1, tooltipHeight + 5, 0, (usingExternalTexture ? 1 : 32.0D), (usingExternalTexture ? tooltipHeight + 5 : 32.0D), false, borderTexture); // Left Border
-                    drawTextureRect(zLevel, tooltipX + tooltipTextWidth + 2, tooltipY - 3, 1, tooltipHeight + 6, 0, (usingExternalTexture ? 1 : 32.0D), (usingExternalTexture ? tooltipHeight + 6 : 32.0D), false, borderTexture); // Right Border
+                    drawTextureRect(zLevel, tooltipX - 3, tooltipY - 3, tooltipTextWidth + 5, 1, 0, (usingExternalTexture ? tooltipTextWidth + 5 : 32.0f), (usingExternalTexture ? 1 : 32.0f), false, borderTexture); // Top Border
+                    drawTextureRect(zLevel, tooltipX - 3, tooltipY + tooltipHeight + 2, tooltipTextWidth + 5, 1, 0, (usingExternalTexture ? tooltipTextWidth + 5 : 32.0f), (usingExternalTexture ? 1 : 32.0f), false, borderTexture); // Bottom Border
+                    drawTextureRect(zLevel, tooltipX - 3, tooltipY - 3, 1, tooltipHeight + 5, 0, (usingExternalTexture ? 1 : 32.0f), (usingExternalTexture ? tooltipHeight + 5 : 32.0f), false, borderTexture); // Left Border
+                    drawTextureRect(zLevel, tooltipX + tooltipTextWidth + 2, tooltipY - 3, 1, tooltipHeight + 6, 0, (usingExternalTexture ? 1 : 32.0f), (usingExternalTexture ? tooltipHeight + 6 : 32.0f), false, borderTexture); // Right Border
                 }
             }
 
@@ -570,8 +570,8 @@ public class GuiUtils {
      * @param width  The width to render the background to
      * @param height The height to render the background to
      */
-    public void drawBackground(final double width, final double height) {
-        double widthDivider = 32.0D, heightDivider = 32.0D;
+    public void drawBackground(final float width, final float height) {
+        float widthDivider = 32.0f, heightDivider = 32.0f;
         if (CraftPresence.instance.world != null) {
             drawGradientRect(300, 0, 0, width, height, "-1072689136", "-804253680");
         } else {
@@ -676,8 +676,8 @@ public class GuiUtils {
      * @param tint        The Tinting Level of the Object
      * @param texLocation The game texture to render the object as
      */
-    public void drawTextureRect(double zLevel, double xPos, double yPos, double width, double height, double tint, Identifier texLocation) {
-        drawTextureRect(zLevel, xPos, yPos, width, height, tint, 32.0D, 32.0D, false, texLocation);
+    public void drawTextureRect(double zLevel, double xPos, double yPos, float width, float height, float tint, Identifier texLocation) {
+        drawTextureRect(zLevel, xPos, yPos, width, height, tint, 32.0f, 32.0f, false, texLocation);
     }
 
     /**
@@ -692,7 +692,7 @@ public class GuiUtils {
      * @param shouldBeDark Whether the Texture should display in a darker format
      * @param texLocation  The game texture to render the object as
      */
-    public void drawTextureRect(double zLevel, double xPos, double yPos, double width, double height, double tint, double widthDivider, double heightDivider, boolean shouldBeDark, Identifier texLocation) {
+    public void drawTextureRect(double zLevel, double xPos, double yPos, float width, float height, float tint, float widthDivider, float heightDivider, boolean shouldBeDark, Identifier texLocation) {
         try {
             if (texLocation != null) {
                 CraftPresence.instance.getTextureManager().bindTexture(texLocation);
@@ -709,10 +709,10 @@ public class GuiUtils {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
         buffer.begin(GL11.GL_QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
-        buffer.vertex(xPos, yPos + height, zLevel).texture(0.0D, (height / heightDivider + tint)).color(rgbData.getFirst(), rgbData.getSecond(), rgbData.getSecond(), 255).next();
+        buffer.vertex(xPos, yPos + height, zLevel).texture(0.0f, (height / heightDivider + tint)).color(rgbData.getFirst(), rgbData.getSecond(), rgbData.getSecond(), 255).next();
         buffer.vertex(xPos + width, yPos + height, zLevel).texture((width / widthDivider), (height / heightDivider + tint)).color(rgbData.getFirst(), rgbData.getSecond(), rgbData.getSecond(), 255).next();
         buffer.vertex(xPos + width, yPos, zLevel).texture((width / widthDivider), tint).color(rgbData.getFirst(), rgbData.getSecond(), rgbData.getSecond(), 255).next();
-        buffer.vertex(xPos, yPos, zLevel).texture(0.0D, tint).color(rgbData.getFirst(), rgbData.getSecond(), rgbData.getSecond(), 255).next();
+        buffer.vertex(xPos, yPos, zLevel).texture(0.0f, tint).color(rgbData.getFirst(), rgbData.getSecond(), rgbData.getSecond(), 255).next();
         tessellator.draw();
     }
 

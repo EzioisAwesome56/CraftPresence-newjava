@@ -299,7 +299,7 @@ public class ServerUtils {
                 if (currentServerMessage.toLowerCase().contains("&playerinfo&")) {
                     // &coords& Argument = Current Coordinates of Player
                     if (CraftPresence.CONFIG.innerPlayerPlaceholderMessage.toLowerCase().contains("&coords&")) {
-                        final Pair<Pair<Double, Double>, Double> newCoordinates = CraftPresence.player != null ? new Pair<>(new Pair<>(StringUtils.roundDouble(CraftPresence.player.x, 3), StringUtils.roundDouble(CraftPresence.player.z, 3)), StringUtils.roundDouble(CraftPresence.player.y, 3)) : new Pair<>(new Pair<>(0.0D, 0.0D), 0.0D);
+                        final Pair<Pair<Double, Double>, Double> newCoordinates = CraftPresence.player != null ? new Pair<>(new Pair<>(StringUtils.roundDouble(CraftPresence.player.getX(), 3), StringUtils.roundDouble(CraftPresence.player.getZ(), 3)), StringUtils.roundDouble(CraftPresence.player.getY(), 3)) : new Pair<>(new Pair<>(0.0D, 0.0D), 0.0D);
                         if (!newCoordinates.equals(currentCoordinates)) {
                             currentCoordinates = newCoordinates;
                             queuedForUpdate = true;

@@ -123,9 +123,9 @@ public class KeyUtils {
      * Implemented @ {@link CommandUtils#reloadData}
      */
     void onTick() {
-        if (CraftPresence.instance.window != null && CraftPresence.CONFIG != null) {
+        if (CraftPresence.instance.getWindow() != null && CraftPresence.CONFIG != null) {
             try {
-                if (isValidKeyCode(CraftPresence.CONFIG.configKeyCode) && GLFW.glfwGetKey(CraftPresence.instance.window.getHandle(), CraftPresence.CONFIG.configKeyCode) == GLFW.GLFW_PRESS && !CraftPresence.GUIS.isFocused && !CraftPresence.GUIS.openConfigGUI && !CraftPresence.GUIS.configGUIOpened) {
+                if (isValidKeyCode(CraftPresence.CONFIG.configKeyCode) && GLFW.glfwGetKey(CraftPresence.instance.getWindow().getHandle(), CraftPresence.CONFIG.configKeyCode) == GLFW.GLFW_PRESS && !CraftPresence.GUIS.isFocused && !CraftPresence.GUIS.openConfigGUI && !CraftPresence.GUIS.configGUIOpened) {
                     CraftPresence.GUIS.openConfigGUI = true;
                 }
             } catch (Exception | Error ex) {

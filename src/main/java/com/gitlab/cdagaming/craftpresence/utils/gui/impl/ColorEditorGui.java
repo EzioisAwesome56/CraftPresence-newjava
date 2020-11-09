@@ -273,7 +273,7 @@ public class ColorEditorGui extends ExtendedScreen {
             }
 
             // Ensure the Texture is refreshed consistently, if an external texture
-            double widthDivider = 32.0D, heightDivider = 32.0D;
+            float widthDivider = 32.0f, heightDivider = 32.0f;
 
             if (usingExternalTexture) {
                 final String formattedConvertedName = currentConvertedTexturePath.replaceFirst("file://", "");
