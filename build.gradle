@@ -59,7 +59,7 @@ curseforge {
         }
 
         mainArtifact(remapJar) {
-            displayName = "${archive_name} v${version} ${versionLabel} (${mc_version})"
+            displayName = "${archive_name} v${version} ${versionLabel} (${mc_version})-newjava"
         }
 
         options {
